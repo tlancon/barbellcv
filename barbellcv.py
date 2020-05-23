@@ -90,6 +90,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.xy = self.plotMotion.plotItem
         self.xy.setLabel('bottom', 'X', units='m', **{'color': '#76B041'})
         self.xy.setLabel('left', 'Y', units='m', **{'color': '#76B041'})
+        self.xy.setAspectLocked(lock=True, ratio=1)
 
         # Logic controls for button clicks
         self.selecting = False  # Whether color selection window is open
