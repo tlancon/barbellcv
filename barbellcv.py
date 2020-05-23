@@ -63,11 +63,12 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         dlf.close()
 
         # Set up table for display
-        table_headers = ['Avg Vel\n(m/s)', 'Pk Vel\n(m/s)', 'Pk Power\n(W)', 'Y at Pk\n(m)',
-                         'X ROM\n(m)', 'Y ROM\n(m)', 'Conc. Time\n(s)']
-        self.tableSetStats.setColumnCount(len(table_headers))
-        self.tableSetStats.setHorizontalHeaderLabels(table_headers)
-        # TODO Scale column widths to table widget width
+        table_headers = ['Avg Vel (m/s)', 'Pk Vel (m/s)', 'Pk Power (W)', 'Y at Pk (m)',
+                         'X ROM (m)', 'Y ROM (m)', 'Conc. Time (s)']
+        self.tableSetStats.setRowCount(len(table_headers))
+        self.tableSetStats.setVerticalHeaderLabels(table_headers)
+        self.tableSetStats.verticalHeader().setDefaultSectionSize(40)
+        self.tableSetStats.setColumnCount(6)
 
         # Set up plots for display
         # Create empty plot for y and velocity
@@ -271,23 +272,22 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
         """
-        self.tableSetStats.setRowCount(0)
-        self.tableSetStats.setRowCount(len(metadata.keys()))
+        print(metadata)
+        self.tableSetStats.setColumnCount(len(metadata.keys()))
         for r, rep in enumerate(metadata.keys()):
-            # self.tableSetStats.setItem(r, 0, QtWidgets.QTableWidgetItem(str(r+1)))
-            self.tableSetStats.setItem(r, 0, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
-            self.tableSetStats.setItem(r, 1, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_velocity']:.2f}"))
-            self.tableSetStats.setItem(r, 2, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_power']:.2f}"))
-            self.tableSetStats.setItem(r, 3, QtWidgets.QTableWidgetItem(f"{metadata[rep]['height_when_peaked']:.2f}"))
-            self.tableSetStats.setItem(r, 4, QtWidgets.QTableWidgetItem(f"{metadata[rep]['x_rom']:.2f}"))
-            self.tableSetStats.setItem(r, 5, QtWidgets.QTableWidgetItem(f"{metadata[rep]['y_rom']:.2f}"))
-            self.tableSetStats.setItem(r, 6, QtWidgets.QTableWidgetItem(f"{metadata[rep]['time_to_complete']:.2f}"))
+            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
+            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_velocity']:.2f}"))
+            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_power']:.2f}"))
+            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['height_when_peaked']:.2f}"))
+            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['x_rom']:.2f}"))
+            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['y_rom']:.2f}"))
+            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['time_to_complete']:.2f}"))
             if metadata[rep]['peak_velocity'] >= 1.2:
-                row_color = QtGui.QColor(self.table_colors[0])
+                col_color = QtGui.QColor(self.table_colors[0])
             else:
-                row_color = QtGui.QColor(self.table_colors[1])
-            for c in range(self.tableSetStats.columnCount()):
-                self.tableSetStats.item(r, c).setBackground(row_color)
+                col_color = QtGui.QColor(self.table_colors[1])
+            for i in range(self.tableSetStats.rowCount()):
+                self.tableSetStats.item(i, r).setBackground(col_color)
 
     def log_set(self):
         """
