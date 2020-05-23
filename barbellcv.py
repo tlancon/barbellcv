@@ -432,11 +432,11 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 t_r = data['Time'].values[indices][-1]
                 pk_vel = np.max(data['Velocity'].values[indices])
                 if pk_vel >= 1.2:
-                    lri_brush = pg.mkBrush(color='#76B041')
-                    lri_pen = pg.mkPen(color='#76B041')
+                    rep_color = '#76B041'
                 else:
-                    lri_brush = pg.mkBrush(color='#E4572E')
-                    lri_pen = pg.mkPen(color='#E4572E')
+                    rep_color = '#E4572E'
+                lri_brush = pg.mkBrush(color=rep_color)
+                lri_pen = pg.mkPen(color=rep_color)
                 lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
                 lri.setOpacity(0.3)
                 ti = pg.TextItem(text=f"{rep}", color='#FFC914', anchor=(0.5, 0.5))
