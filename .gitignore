@@ -1,5 +1,6 @@
 data/
 resources/settings.json
+resources/barbellcv_analyze.ui
 test_sample.py
 
 # Byte-compiled / optimized / DLL files
