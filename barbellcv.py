@@ -74,9 +74,9 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Create empty plot for y and velocity
         self.plotTimeline.clear()
         self.t1 = self.plotTimeline.plotItem
-        self.t1.setLabel('bottom', 'Time', units='s', **{'color': '#FFFFFF'})
-        self.t1.setLabel('left', 'Y', units='m', **{'color': '#E4572E'})
-        self.t1.setLabel('right', 'Velocity', units='m/s', **{'color': '#17BEEB'})
+        self.t1.setLabel('bottom', 'Time (s)', **{'color': '#FFFFFF'})
+        self.t1.setLabel('left', 'Y (m)', **{'color': '#E4572E'})
+        self.t1.setLabel('right', 'Velocity (m/s)', **{'color': '#17BEEB'})
         # Link X axis but keep y separate for y, velocity
         self.t2 = pg.ViewBox()
         self.t1.showAxis('right')
@@ -88,8 +88,8 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Create empty plot for barbell motion path
         self.plotMotion.clear()
         self.xy = self.plotMotion.plotItem
-        self.xy.setLabel('bottom', 'X', units='m', **{'color': '#76B041'})
-        self.xy.setLabel('left', 'Y', units='m', **{'color': '#76B041'})
+        self.xy.setLabel('bottom', 'X (m)', **{'color': '#76B041'})
+        self.xy.setLabel('left', 'Y (m)', **{'color': '#76B041'})
         self.xy.setAspectLocked(lock=True, ratio=1)
 
         # Logic controls for button clicks
