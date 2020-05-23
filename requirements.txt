@@ -1,0 +1,6 @@
+PyQt5
+QDarkStyle
+numpy
+opencv-python
+pandas
+scipy

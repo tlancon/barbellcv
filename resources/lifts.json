@@ -1,0 +1,65 @@
+{
+  "backsquat": {
+    "name": "Back Squat"
+  },
+  "clean": {
+    "name": "Clean"
+  },
+  "cleanandjerk": {
+    "name": "Clean and Jerk"
+  },
+  "cleanpull": {
+    "name": "Clean Pull"
+  },
+  "complex": {
+    "name": "Complex"
+  },
+  "frontsquat": {
+    "name": "Front Squat"
+  },
+  "hangclean": {
+    "name": "Hang Clean"
+  },
+  "hangpowerclean": {
+    "name": "Hang Power Clean"
+  },
+  "hangpowersnatch": {
+    "name": "Hang Power Snatch"
+  },
+  "hangsnatch": {
+    "name": "Hang Snatch"
+  },
+  "jerk": {
+    "name": "Jerk"
+  },
+  "musclesnatch": {
+    "name": "Muscle Snatch"
+  },
+  "overheadpress": {
+    "name": "Overhead Press"
+  },
+  "powerclean": {
+    "name": "Power Clean"
+  },
+  "powersnatch": {
+    "name": "Power Snatch"
+  },
+  "pushpress": {
+    "name": "Push Press"
+  },
+  "snatch": {
+    "name": "Snatch"
+  },
+  "snatchpull": {
+    "name": "Snatch Pull"
+  },
+  "tallsnatch": {
+    "name": "Tall Snatch"
+  },
+  "testdown": {
+    "name": "TEST DOWN"
+  },
+  "testup": {
+    "name": "TEST UP"
+  }
+}

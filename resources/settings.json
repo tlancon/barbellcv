@@ -1,0 +1,13 @@
+{
+    "camera": 0,
+    "rotation": 3,
+    "colors": {
+        "min_hue": 2,
+        "max_hue": 10,
+        "min_saturation": 154,
+        "max_saturation": 211,
+        "min_value": 139,
+        "max_value": 255
+    },
+    "diameter": 83
+}
