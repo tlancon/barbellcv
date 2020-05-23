@@ -412,7 +412,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Parameters
         ----------
         data : DataFrame
-            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity.
+            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
         """
         self.t2.clear()
         y_pen = pg.mkPen(color='#E4572E', width=1.5)
@@ -423,6 +423,18 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         m_pen = pg.mkPen(color='#76B041', width=1.5)
         self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
+
+        reps_labeled, n_reps = label(data['Reps'].values)
+        if n_reps != 0:
+            for rep in range(1, n_reps + 1):
+                indices = [reps_labeled == rep]
+                t_l = data['Time'].values[indices][0]
+                t_r = data['Time'].values[indices][-1]
+                lri = pg.LinearRegionItem((t_l, t_r), movable=False)
+                ti = pg.TextItem(text=f"{rep}", anchor=(0.5, 0.5))
+                ti.setPos((t_r + t_l) / 2, 0.9)
+                self.t1.addItem(lri)
+                self.t1.addItem(ti)
 
     def update_timeline_view(self):
         self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
