@@ -1,5 +1,5 @@
-/data/
-/resources/settings.json
+data/
+resources/settings.json
 test_sample.py
 
 # Byte-compiled / optimized / DLL files

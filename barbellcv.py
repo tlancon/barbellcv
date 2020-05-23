@@ -9,10 +9,14 @@ import cv2
 import qdarkstyle
 import numpy as np
 import pandas as pd
+import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets, uic
 from scipy.signal import medfilt
 from scipy.ndimage import label
 from scipy.ndimage.filters import maximum_filter1d, minimum_filter1d
+
+pg.setConfigOption('background', '#19232D')
+pg.setConfigOptions(antialias=True)
 
 qtCreatorFile = os.path.abspath('resources/barbellcv_log.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
@@ -64,6 +68,27 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableSetStats.setColumnCount(len(table_headers))
         self.tableSetStats.setHorizontalHeaderLabels(table_headers)
         # TODO Scale column widths to table widget width
+
+        # Set up plots for display
+        # Create empty plot for y and velocity
+        self.plotTimeline.clear()
+        self.t1 = self.plotTimeline.plotItem
+        self.t1.setLabel('bottom', 'Time', units='s', **{'color': '#FFFFFF'})
+        self.t1.setLabel('left', 'Y', units='m', **{'color': '#E4572E'})
+        self.t1.setLabel('right', 'Velocity', units='m/s', **{'color': '#17BEEB'})
+        # Link X axis but keep y separate for y, velocity
+        self.t2 = pg.ViewBox()
+        self.t1.showAxis('right')
+        self.t1.scene().addItem(self.t2)
+        self.t1.getAxis('right').linkToView(self.t2)
+        self.t2.setXLink(self.t1)
+        self.update_timeline_view()
+        self.t1.vb.sigResized.connect(self.update_timeline_view)
+        # Create empty plot for barbell motion path
+        self.plotMotion.clear()
+        self.xy = self.plotMotion.plotItem
+        self.xy.setLabel('bottom', 'X', units='m', **{'color': '#76B041'})
+        self.xy.setLabel('left', 'Y', units='m', **{'color': '#76B041'})
 
         # Logic controls for button clicks
         self.selecting = False  # Whether color selection window is open
@@ -363,8 +388,9 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[indices]) - np.min(ycal[indices])
             rep_stats[f"rep{rep}"]['time_to_complete'] = set_data['Time'].values[indices][-1] - set_data['Time'].values[indices][0]
         set_metadata['rep_stats'] = rep_stats
-        # Update the table
+        # Update the table and plots
         self.update_table(set_metadata['rep_stats'])
+        self.update_plots(set_data)
 
         # Write the metadata
         # From https://stackoverflow.com/questions/1447287/format-floats-with-standard-json-module
@@ -378,6 +404,29 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Adjust UI back
         self.statusbar.clearMessage()
         self.statusbar.showMessage('Analysis complete!', 5000)
+
+    def update_plots(self, data):
+        """
+        Adapt timeline and motion plots to new log and analysis.
+
+        Parameters
+        ----------
+        data : DataFrame
+            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity.
+        """
+        self.t2.clear()
+        y_pen = pg.mkPen(color='#E4572E', width=1.5)
+        v_pen = pg.mkPen(color='#17BEEB', width=1.5)
+        self.t1.plot(data['Time'].values, data['Y_m'].values, pen=y_pen, clear=True)
+        self.t2.addItem(
+            pg.PlotCurveItem(data['Time'].values, data['Velocity'].values, pen=v_pen, clear=True))
+
+        m_pen = pg.mkPen(color='#76B041', width=1.5)
+        self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
+
+    def update_timeline_view(self):
+        self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
+        self.t2.linkedViewChanged(self.t1.vb, self.t2.XAxis)
 
     def closeEvent(self, event):
         """

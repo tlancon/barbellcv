@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>1040</width>
-    <height>460</height>
+    <height>620</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1040</width>
-    <height>460</height>
+    <height>620</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,66 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,1">
+    <item row="7" column="0" colspan="2">
+     <layout class="QGridLayout" name="layoutExercise" columnstretch="2,1,0,0">
+      <item row="0" column="2">
+       <widget class="QDoubleSpinBox" name="spinLbs">
+        <property name="decimals">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <double>1102.309999999999945</double>
+        </property>
+        <property name="value">
+         <double>45.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="labelKgs">
+        <property name="text">
+         <string>kgs</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="labelLbs">
+        <property name="text">
+         <string>lbs</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="spinKgs">
+        <property name="decimals">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <double>501.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>20.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="comboExercise"/>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="labelExercise">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Exercise</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="9" column="1">
      <widget class="QPushButton" name="buttonAnalyzeSet">
       <property name="enabled">
@@ -40,6 +99,13 @@
       </property>
       <property name="text">
        <string>Analyze Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="2">
+     <widget class="Line" name="lineSep4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
@@ -64,13 +130,6 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="Line" name="lineSep1">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
     <item row="6" column="0" colspan="2">
      <widget class="Line" name="lineSep3">
       <property name="orientation">
@@ -78,15 +137,15 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="0" colspan="2">
-     <widget class="Line" name="lineSep4">
+    <item row="4" column="0" colspan="2">
+     <widget class="Line" name="lineSep2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="2">
-     <widget class="Line" name="lineSep2">
+    <item row="2" column="0" colspan="2">
+     <widget class="Line" name="lineSep1">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -214,65 +273,6 @@
       </item>
      </layout>
     </item>
-    <item row="7" column="0" colspan="2">
-     <layout class="QGridLayout" name="layoutExercise" columnstretch="2,1,0,0">
-      <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="spinLbs">
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <double>1102.309999999999945</double>
-        </property>
-        <property name="value">
-         <double>45.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="labelKgs">
-        <property name="text">
-         <string>kgs</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="labelLbs">
-        <property name="text">
-         <string>lbs</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="spinKgs">
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <double>501.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>20.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QComboBox" name="comboExercise"/>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QLabel" name="labelExercise">
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Exercise</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="5" column="0" colspan="2">
      <layout class="QGridLayout" name="layoutMarkerDiameter" columnstretch="2,0">
       <item row="0" column="0" colspan="2">
@@ -355,6 +355,12 @@
     <item row="0" column="2" rowspan="10">
      <widget class="QTableWidget" name="tableSetStats"/>
     </item>
+    <item row="10" column="2">
+     <widget class="PlotWidget" name="plotTimeline" native="true"/>
+    </item>
+    <item row="10" column="0" colspan="2">
+     <widget class="PlotWidget" name="plotMotion" native="true"/>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -384,6 +390,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
