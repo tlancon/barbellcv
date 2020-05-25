@@ -38,6 +38,9 @@ Press Enter to escape the preview.
 *More in-depth instructions coming soon.*
 
 ## Limitations
+For the video analysis to work correctly on Windows 10 you may need to install the basic
+[K-Lite Codec Pack](https://codecguide.com/download_kl.htm).
+
 *As I test this setup more I will learn more about its accuracy and what the limitations are, then update
 this section. Suffice it to say that all results should be taken with a grain of salt until verified.*
 
