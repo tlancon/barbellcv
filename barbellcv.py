@@ -282,7 +282,8 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         # Adapt the UI
         self.statusbar.clearMessage()
-        self.statusbar.showMessage('Recording your set. Press the Enter key when you are finished.')
+        self.statusbar.showMessage('Recording your set. Press the Enter key when you are finished. The app will then '
+                                   'hang for a few seconds to process before showing results.')
         self.buttonLogSet.setText('Press Enter\nto finish.')
         self.buttonPreview.setEnabled(False)
         self.buttonSelectColor.setEnabled(False)
@@ -338,8 +339,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if key == ord('\r'):
                 self.tracking = False
             if self.tracking is False:
-                self.statusbar.clearMessage()
-                self.statusbar.showMessage('Analyzing set...')
                 break
         # Release hold on camera and write video
         cap.release()
