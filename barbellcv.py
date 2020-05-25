@@ -338,6 +338,8 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if key == ord('\r'):
                 self.tracking = False
             if self.tracking is False:
+                self.statusbar.clearMessage()
+                self.statusbar.showMessage('Analyzing set...')
                 break
         # Release hold on camera and write video
         cap.release()
@@ -502,8 +504,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         DataFrame
             A new DataFrame with updated information for more advanced analytics.
         """
-        self.statusbar.clearMessage()
-        self.statusbar.showMessage('Analyzing set...')
 
         # Need to zero out bullshit numbers like 3.434236345E-120 or some shit
         t[0] = 0
@@ -545,8 +545,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         set_analyzed['Velocity'] = velocity
         set_analyzed['Reps'] = reps_binary
 
-        self.statusbar.clearMessage()
-
         return set_analyzed
 
     def post_process_video(self, video_file, n_frames, set_data):
@@ -562,8 +560,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         set_data : DataFrame
             Full DataFrame obtained from analyzing the set containing (at minimum) the t, x, y coordinates of the bar.
         """
-        self.statusbar.clearMessage()
-        self.statusbar.showMessage('Tracing and converting video...')
 
         # Get smoothed motion to remove outliers and make path nicer
         xsmooth = medfilt(set_data['X_pix'].values, 7)
@@ -605,8 +601,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         cap.release()
         video_out.release()
         cv2.destroyAllWindows()
-
-        self.statusbar.clearMessage()
 
 
 if __name__ == "__main__":
