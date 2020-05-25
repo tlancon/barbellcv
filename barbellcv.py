@@ -273,7 +273,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
         """
-        print(metadata)
         self.tableSetStats.setColumnCount(len(metadata.keys()))
         for r, rep in enumerate(metadata.keys()):
             self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
