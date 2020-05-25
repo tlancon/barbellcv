@@ -351,7 +351,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Do the actual analysis
         # First, correct Y for video height since Y increases going DOWN
         path_y = height - path_y
-        set_data = self.analyze_set(path_time, path_x, path_y, path_radii)
+        set_data = utilities.analyze_set(path_time, path_x, path_y, path_radii, self.spinDiameter.value())
         set_data.to_csv(log_file)
         # Convert the video to the correct framerate and trace the bar path
         utilities.post_process_video(video_file, n_frames, set_data)
@@ -376,15 +376,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Update the table and plots
         self.update_table(set_metadata['rep_stats'])
         self.update_plots(set_data)
-
-        # Write the metadata
-        # From https://stackoverflow.com/questions/1447287/format-floats-with-standard-json-module
-        # Since json can't encode floats??
-        # I really don't want to loop through the dict, check type, and convert floats to strings but...
-        # json.encoder.FLOAT_REPR = lambda o: format(0, '.2f')
-        # metadata = open(meta_file, 'w')
-        # json.dump(set_metadata, metadata, indent=4)
-        # metadata.close()
 
         # Adjust UI back
         self.statusbar.clearMessage()
@@ -482,69 +473,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         log_path = os.path.join(self.data_dir, f"{timestamp}_{exercise}_{kilos}.csv")
         metadata_path = os.path.join(self.data_dir, f"{timestamp}_{exercise}_{kilos}.json")
         return [video_path, log_path, metadata_path]
-
-    def analyze_set(self, t, x, y, r):
-        """
-        Calculates statistics of a set from a video recording and barbell tracking arrays.
-
-        Parameters
-        ----------
-        t : (N) array
-            Time in seconds from the beginning of the recording that each frame is taken.
-        x : (N) array
-            X location of the barbell in pixels.
-        y : (N) array
-            Y location of the barbell in pixels.
-        r : (N) array
-            Radius of the barbell marker in pixels measured at each time step.
-
-        Returns
-        -------
-        DataFrame
-            A new DataFrame with updated information for more advanced analytics.
-        """
-
-        # Need to zero out bullshit numbers like 3.434236345E-120 or some shit
-        t[0] = 0
-        t[np.abs(t) < 0.0000001] = 0
-        x[np.abs(x) < 0.0000001] = 0
-        y[np.abs(y) < 0.0000001] = 0
-        r[np.abs(r) < 0.0000001] = 0
-
-        # Need some info from the UI
-        nominal_radius = self.spinDiameter.value() / 2 / 1000  # meters
-        # Calculate meter/pixel calibration from beginning of log when barbell isn't moving
-        # Take it from frame 5 - 20 to allow time for video to "start up" (if that's even a thing?)
-        calibration = nominal_radius / np.median(r[5:20])
-
-        # Smooth motion to remove outliers
-        xsmooth = medfilt(x, 7)
-        ysmooth = medfilt(y, 7)
-
-        # Calibrate x and y movement
-        xcal = (xsmooth - np.min(xsmooth)) * calibration  # meters
-        ycal = (ysmooth - np.min(ysmooth)) * calibration  # meters
-
-        # Calculate displacement and velocity
-        displacement = np.sqrt(np.diff(xcal, prepend=xcal[0]) ** 2 + np.diff(ycal, prepend=ycal[0]) ** 2)  # m
-        velocity = np.zeros(shape=t.shape, dtype=np.float32)  # m/s
-        velocity[1:] = displacement[1:] / np.diff(t)
-
-        # Find the reps and label them
-        reps_binary = utilities.find_reps(ycal, threshold=0.01, open_size=5, close_size=9)
-
-        set_analyzed = pd.DataFrame()
-        set_analyzed['Time'] = t
-        set_analyzed['X_pix'] = x
-        set_analyzed['Y_pix'] = y
-        set_analyzed['R_pix'] = r
-        set_analyzed['X_m'] = xcal
-        set_analyzed['Y_m'] = ycal
-        set_analyzed['Displacement'] = displacement
-        set_analyzed['Velocity'] = velocity
-        set_analyzed['Reps'] = reps_binary
-
-        return set_analyzed
 
 
 if __name__ == "__main__":
