@@ -141,10 +141,6 @@ def post_process_video(video_file, n_frames, set_data):
     # Get smoothed motion to remove outliers and make path nicer
     xsmooth = medfilt(set_data['X_pix'].values, 7)
     ysmooth = medfilt(set_data['Y_pix'].values, 7)
-    # Make lists of smoothed points for each set
-    # rep_points = {}
-    # for r in range(1, np.max(set_data['Reps'].values) + 1):
-    #     rep_points[f"{r}"] = [xsmooth[set_data['Reps'].values==r], ysmooth[set_data['Reps'].values==r]]
 
     # Open video stream
     cap = cv2.VideoCapture(video_file)
