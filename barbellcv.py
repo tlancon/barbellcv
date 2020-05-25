@@ -438,7 +438,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         set_metadata['rep_stats'] = rep_stats
         # Update the table and plots
         self.update_table(set_metadata['rep_stats'])
-        self.update_plots(set_data, set_metadata['rep_stats'])
+        self.update_plots(set_data)
 
         # Adjust UI back
         self.statusbar.clearMessage()
