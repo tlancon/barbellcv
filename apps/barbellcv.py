@@ -1,12 +1,10 @@
 # Standard library imports
 import os
-import sys
 import time
 import json
 from collections import deque
 # External library imports
 import cv2
-import qdarkstyle
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets, uic
@@ -14,21 +12,13 @@ from scipy.ndimage import label
 # Custom imports
 from utils import analyze, webcam
 
-pg.setConfigOption('background', '#19232D')
-pg.setConfigOptions(antialias=True)
-
-# ALL data is saved to the data directory for now - this needs to exist
-if os.path.isdir('./data/') is False:
-    os.mkdir('./data/')
-if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
-    os.mkdir(f"./data/{time.strftime('%y%m%d')}")
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
 
-qtCreatorFile = os.path.abspath('resources/barbellcv_log.ui')
+qtCreatorFile = os.path.abspath('./apps/barbellcv_log.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 
-class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
+class BarbellCVApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
@@ -97,7 +87,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tracking = False  # Whether barbell tracking is ongoing for a set
         self.cropping = False  # Whether the lifer is currently cropping
 
-        # Globals that need sharing throughout the app
+        # Globals that need sharing throughout the apps
         self.mask_colors = deque()
         self.table_colors = ['#76B041', '#E4572E']  # [Good rep, bad rep]
         self.smoothing_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
@@ -345,7 +335,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         # Adapt the UI
         self.statusbar.clearMessage()
-        self.statusbar.showMessage('Recording your set. Press the Enter key when you are finished. The app will then '
+        self.statusbar.showMessage('Recording your set. Press the Enter key when you are finished. The apps will then '
                                    'hang for a few seconds to process before showing results.')
         self.buttonLogSet.setText('Press Enter\nto finish.')
         self.buttonPreview.setEnabled(False)
@@ -479,11 +469,3 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         log_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.csv")
         metadata_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.json")
         return [video_path, log_path, metadata_path]
-
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = KiloCountLogApp()
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    window.show()
-    sys.exit(app.exec_())
