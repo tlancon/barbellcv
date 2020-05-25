@@ -13,7 +13,8 @@ import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets, uic
 from scipy.signal import medfilt
 from scipy.ndimage import label
-from scipy.ndimage.filters import maximum_filter1d, minimum_filter1d
+# Custom imports
+import utilities
 
 pg.setConfigOption('background', '#19232D')
 pg.setConfigOptions(antialias=True)
@@ -44,7 +45,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Set up camera options
         # Find available cameras
-        self.camera_list = self.list_available_cameras()
+        self.camera_list = utilities.list_available_cameras()
         for c in self.camera_list:
             self.comboCamera.addItem(str(c))
         # Set up rotation
@@ -101,8 +102,8 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Globals that need sharing throughout the app
         self.output_dir = os.path.abspath(os.path.dirname('./data/'))
         self.mask_colors = deque()
-        self.smoothing_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
         self.table_colors = ['#76B041', '#E4572E']  # [Good rep, bad rep]
+        self.smoothing_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
 
     # Methods for initializing UI
 
@@ -145,28 +146,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         json.dump(settings, settings_file, indent=4)
         settings_file.close()
 
-    def list_available_cameras(self):
-        """
-        Searches for available webcams and returns a list of the ones that are found.
-
-        Returns
-        -------
-        list
-            Indices of available webcams that can be used for VideoCapture().
-        """
-        camera_index = 0
-        camera_list = []
-        while True:
-            cap = cv2.VideoCapture(camera_index)
-            if cap.isOpened() is False:
-                break
-            else:
-                camera_list.append(camera_index)
-            cap.release()
-            cv2.destroyAllWindows()
-            camera_index += 1
-        return camera_list
-
     # Methods for adapting UI
 
     def lbs_changed(self):
@@ -194,7 +173,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setEnabled(False)
         self.buttonLogSet.setEnabled(False)
         # When implemented: self.buttonAnalyzeSet.setEnabled(False)
-        cap = self.initiate_camera()
+        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
         while True:
             _, frame = cap.read()
             frame = np.rot90(frame, self.comboRotation.currentIndex())
@@ -224,7 +203,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # When implemented: self.buttonAnalyzeSet.setEnabled(False)
         self.selecting = True
         n_90_rotations = self.comboRotation.currentIndex()
-        cap = self.initiate_camera()
+        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
         while True:
             _, frame = cap.read()
             frame = np.rot90(frame, n_90_rotations)
@@ -238,7 +217,10 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.spinMaxSaturation.setValue(max(c[1] for c in self.mask_colors))
                 self.spinMinValue.setValue(min(c[2] for c in self.mask_colors))
                 self.spinMaxValue.setValue(max(c[2] for c in self.mask_colors))
-                masked = cv2.bitwise_and(frame, frame, mask=self.apply_mask(frame))
+                lower = np.array([self.spinMinHue.value(), self.spinMinSaturation.value(), self.spinMinValue.value()])
+                upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
+                masked = cv2.bitwise_and(frame, frame,
+                                         mask=utilities.apply_mask(frame, lower, upper, self.smoothing_kernel))
                 cv2.imshow('Masked', masked)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('\r'):
@@ -323,7 +305,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         path_y = np.array([], dtype=np.float32)
         path_radii = np.array([], dtype=np.float32)
         # Camera setup
-        cap = self.initiate_camera()
+        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
         time.sleep(2)
         if n_90_rotations in [0, 2]:
             width = int(cap.get(3))
@@ -336,7 +318,9 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         while True:
             _, frame = cap.read()
             frame = cv2.UMat(np.rot90(frame, n_90_rotations))
-            masked = self.apply_mask(frame)
+            lower = np.array([self.spinMinHue.value(), self.spinMinSaturation.value(), self.spinMinValue.value()])
+            upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
+            masked = utilities.apply_mask(frame, lower, upper, self.smoothing_kernel)
             contours, _ = cv2.findContours(masked, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             # Only track points if a contour is found
             if len(contours) != 0:
@@ -464,25 +448,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Methods for utility
 
-    def initiate_camera(self):
-        """
-        Starts a VideoCapture object for streaming or recording.
-
-        Returns
-        -------
-        VideoCapture
-            cv2.VideoCapture object
-        """
-        camera = cv2.VideoCapture(self.comboCamera.currentIndex(), cv2.CAP_DSHOW)
-        if camera.isOpened() is False:
-            print('Camera unable to be opened.')
-            # TODO Change this to a message box
-        width = 1280
-        height = 960
-        camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        return camera
-
     def handle_color_selection(self, event, x, y, flags, frame):
         if event == cv2.EVENT_LBUTTONDOWN:
             self.mask_colors.append(frame[y, x].tolist())
@@ -496,27 +461,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             cv2.destroyWindow('Masked')
             self.mask_colors = deque()
             self.reset_colors()
-
-    def apply_mask(self, frame):
-        """
-        Masks video frames by the selected color range. Frame must be in native OpenCV color space.
-
-        Parameters
-        ----------
-        frame : (N, M) array
-            Array representing a single video frame in BGR color space.
-
-        Returns
-        -------
-        (N, M) array
-            Video frame that is masked by the currently selected colors.
-
-        """
-        lower = np.array([self.spinMinHue.value(), self.spinMinSaturation.value(), self.spinMinValue.value()])
-        upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
-        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv_frame, lower, upper)
-        return cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.smoothing_kernel)
 
     def build_filepaths(self):
         """
@@ -588,7 +532,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         velocity[1:] = displacement[1:] / np.diff(t)
 
         # Find the reps and label them
-        reps_binary = self.find_reps(ycal, threshold=0.01, open_size=5, close_size=9)
+        reps_binary = utilities.find_reps(ycal, threshold=0.01, open_size=5, close_size=9)
 
         set_analyzed = pd.DataFrame()
         set_analyzed['Time'] = t
@@ -604,50 +548,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.statusbar.clearMessage()
 
         return set_analyzed
-
-    def find_reps(self, y, threshold, open_size, close_size):
-        """
-        From the Y profile of a barbell's path, determine the concentric phase of each rep.
-
-        The algorithm is as follows:
-            1. Compute the gradient (dy/dt) of the Y motion
-            2. Binarize the gradient signal by a minimum threshold value to eliminate noise.
-            3. Perform 1D opening by open_size using a minimum then maximum filter in series.
-            4. Perform 1D closing by close_size using a maximum then minimum filter in series.
-
-        The result is a step function that is true for every time point that the concentric (+Y) phase of the rep
-        is being performed.
-
-        Parameters
-        ----------
-        y : (N) array
-            Y component of the motion of the barbell path.
-        threshold : float
-            Miniumum acceptable value of the gradient (dY/dt) to indicate a rep.
-            Increasing this can help eliminate noise, but may cause a small delay after a rep begins to when it is
-            counted, therefore underestimating the time to complete a rep.
-        open_size : int
-            Minimum threshold of length of time that it takes to complete a rep (in frames).
-            Increase this if there are false positive spikes in the rep step signal that are small in width.
-        close_size : int
-            Minimum length of time that could be between reps.
-            Increase this if there are false breaks between reps that should be continuous.
-
-        Returns
-        -------
-        (N) array
-            Step signal representing when reps are performed. (1 indicates concentric phase of rep, 0 indicates no rep).
-        """
-        ygrad = np.gradient(y)
-        rep_signal = np.where(ygrad > threshold, 1, 0)
-
-        # Opening to remove spikes
-        rep_signal = maximum_filter1d(minimum_filter1d(rep_signal, open_size), open_size)
-
-        # Closing to connect movements (as in the step up from the jerk)
-        rep_signal = minimum_filter1d(maximum_filter1d(rep_signal, close_size), close_size)
-
-        return rep_signal
 
     def post_process_video(self, video_file, n_frames, set_data):
         """
