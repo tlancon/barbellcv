@@ -17,6 +17,13 @@ from utils import analyze, webcam
 pg.setConfigOption('background', '#19232D')
 pg.setConfigOptions(antialias=True)
 
+# ALL data is saved to the data directory for now - this needs to exist
+if os.path.isdir('./data/') is False:
+    os.mkdir('./data/')
+if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
+    os.mkdir(f"./data/{time.strftime('%y%m%d')}")
+DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
+
 qtCreatorFile = os.path.abspath('resources/barbellcv_log.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
@@ -26,13 +33,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-
-        # ALL data is saved to the data directory for now - this needs to exist
-        if os.path.isdir('./data/') is False:
-            os.mkdir('./data/')
-        if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
-            os.mkdir(f"./data/{time.strftime('%y%m%d')}")
-        self.data_dir = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
 
         # Connect signals
         self.buttonPreview.clicked.connect(self.preview_camera)
@@ -57,9 +57,9 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Load lifts to dropdown
         dlf = open('./resources/lifts.json', 'r')
         self.lifts = json.load(dlf)
+        dlf.close()
         for lift in self.lifts:
             self.comboExercise.addItem(self.lifts[lift]['name'])
-        dlf.close()
 
         # Set up table for display
         table_headers = ['Avg Vel (m/s)', 'Pk Vel (m/s)', 'Pk Power (W)', 'Y at Pk (m)',
@@ -160,6 +160,108 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         lbs = round(self.spinKgs.value() * 2.20462, 0)
         self.spinLbs.setValue(lbs)
 
+    def handle_color_selection(self, event, x, y, flags, frame):
+        """
+        Processes mouse events in color selection cv2 window and adjusts UI logic accordingly.
+        """
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.mask_colors.append(frame[y, x].tolist())
+            self.selecting_active = True
+        elif event == cv2.EVENT_MOUSEMOVE:
+            if self.selecting_active is True:
+                self.mask_colors.append(frame[y, x].tolist())
+        elif event == cv2.EVENT_LBUTTONUP:
+            self.selecting_active = False
+        elif event == cv2.EVENT_RBUTTONDOWN:
+            cv2.destroyWindow('Masked')
+            self.mask_colors = deque()
+            self.reset_colors()
+
+    def reset_colors(self):
+        """
+        Resets the selection colors back to their full ranges.
+        """
+        self.spinMinHue.setValue(0)
+        self.spinMaxHue.setValue(180)
+        self.spinMinSaturation.setValue(0)
+        self.spinMaxSaturation.setValue(255)
+        self.spinMinValue.setValue(0)
+        self.spinMaxValue.setValue(255)
+
+    def update_table(self, metadata):
+        """
+        Clear the table and update it with stats from the current set.
+
+        Parameters
+        ----------
+        metadata : Dictionary
+            Dictionary containing metadata from the current set, including all of the measures to be viewed in the
+            table.
+        """
+        self.tableSetStats.setColumnCount(len(metadata.keys()))
+        for r, rep in enumerate(metadata.keys()):
+            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
+            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_velocity']:.2f}"))
+            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_power']:.2f}"))
+            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['height_when_peaked']:.2f}"))
+            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['x_rom']:.2f}"))
+            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['y_rom']:.2f}"))
+            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['time_to_complete']:.2f}"))
+            if metadata[rep]['peak_velocity'] >= 1.2:
+                col_color = QtGui.QColor(self.table_colors[0])
+            else:
+                col_color = QtGui.QColor(self.table_colors[1])
+            for i in range(self.tableSetStats.rowCount()):
+                self.tableSetStats.item(i, r).setBackground(col_color)
+
+    def update_plots(self, data):
+        """
+        Adapt timeline and motion plots to new log and analysis.
+
+        Parameters
+        ----------
+        data : DataFrame
+            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
+        """
+        self.t2.clear()
+        y_pen = pg.mkPen(color='#E4572E', width=1.5)
+        v_pen = pg.mkPen(color='#17BEEB', width=1.5)
+        self.t1.plot(data['Time'].values, data['Y_m'].values, pen=y_pen, clear=True)
+        self.t2.addItem(
+            pg.PlotCurveItem(data['Time'].values, data['Velocity'].values, pen=v_pen, clear=True))
+
+        m_pen = pg.mkPen(color='#76B041', width=1.5)
+        self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
+
+        reps_labeled, n_reps = label(data['Reps'].values)
+        if n_reps != 0:
+            for rep in range(1, n_reps + 1):
+                indices = [reps_labeled == rep]
+                t_l = data['Time'].values[indices][0]
+                t_r = data['Time'].values[indices][-1]
+                pk_vel = np.max(data['Velocity'].values[indices])
+                if pk_vel >= 1.2:
+                    rep_color = '#76B041'
+                else:
+                    rep_color = '#E4572E'
+                lri_brush = pg.mkBrush(color=rep_color)
+                lri_pen = pg.mkPen(color=rep_color)
+                lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
+                lri.setOpacity(0.3)
+                ti = pg.TextItem(text=f"{rep}", color='#FFC914', anchor=(0.5, 0.5))
+                ti.setPos((t_r + t_l) / 2, 0.9)
+                self.t1.addItem(lri)
+                self.t1.addItem(ti)
+
+    def update_timeline_view(self):
+        """
+        Needed so that when plot is resized, geometries of overlaid PlotItem and PlotCurveItem are handled correctly.
+        """
+        self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
+        self.t2.linkedViewChanged(self.t1.vb, self.t2.XAxis)
+
+    # Button actions
+
     def preview_camera(self):
         """
         Launches a stream of the webcam to allow the lifter to see what framing, rotation, and cropping look like.
@@ -231,43 +333,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # When implemented: self.buttonAnalyzeSet.setEnabled(True)
         self.buttonSelectColor.setText('Select Color')
         self.statusbar.clearMessage()
-
-    def reset_colors(self):
-        """
-        Resets the selection colors back to their full ranges.
-        """
-        self.spinMinHue.setValue(0)
-        self.spinMaxHue.setValue(180)
-        self.spinMinSaturation.setValue(0)
-        self.spinMaxSaturation.setValue(255)
-        self.spinMinValue.setValue(0)
-        self.spinMaxValue.setValue(255)
-
-    def update_table(self, metadata):
-        """
-        Clear the table and update it with stats from the current set.
-
-        Parameters
-        ----------
-        metadata : Dictionary
-            Dictionary containing metadata from the current set, including all of the measures to be viewed in the
-            table.
-        """
-        self.tableSetStats.setColumnCount(len(metadata.keys()))
-        for r, rep in enumerate(metadata.keys()):
-            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
-            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_velocity']:.2f}"))
-            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_power']:.2f}"))
-            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['height_when_peaked']:.2f}"))
-            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['x_rom']:.2f}"))
-            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['y_rom']:.2f}"))
-            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['time_to_complete']:.2f}"))
-            if metadata[rep]['peak_velocity'] >= 1.2:
-                col_color = QtGui.QColor(self.table_colors[0])
-            else:
-                col_color = QtGui.QColor(self.table_colors[1])
-            for i in range(self.tableSetStats.rowCount()):
-                self.tableSetStats.item(i, r).setBackground(col_color)
 
     def log_set(self):
         """
@@ -379,49 +444,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.statusbar.clearMessage()
         self.statusbar.showMessage('Analysis complete!', 5000)
 
-    def update_plots(self, data):
-        """
-        Adapt timeline and motion plots to new log and analysis.
-
-        Parameters
-        ----------
-        data : DataFrame
-            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
-        """
-        self.t2.clear()
-        y_pen = pg.mkPen(color='#E4572E', width=1.5)
-        v_pen = pg.mkPen(color='#17BEEB', width=1.5)
-        self.t1.plot(data['Time'].values, data['Y_m'].values, pen=y_pen, clear=True)
-        self.t2.addItem(
-            pg.PlotCurveItem(data['Time'].values, data['Velocity'].values, pen=v_pen, clear=True))
-
-        m_pen = pg.mkPen(color='#76B041', width=1.5)
-        self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
-
-        reps_labeled, n_reps = label(data['Reps'].values)
-        if n_reps != 0:
-            for rep in range(1, n_reps + 1):
-                indices = [reps_labeled == rep]
-                t_l = data['Time'].values[indices][0]
-                t_r = data['Time'].values[indices][-1]
-                pk_vel = np.max(data['Velocity'].values[indices])
-                if pk_vel >= 1.2:
-                    rep_color = '#76B041'
-                else:
-                    rep_color = '#E4572E'
-                lri_brush = pg.mkBrush(color=rep_color)
-                lri_pen = pg.mkPen(color=rep_color)
-                lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
-                lri.setOpacity(0.3)
-                ti = pg.TextItem(text=f"{rep}", color='#FFC914', anchor=(0.5, 0.5))
-                ti.setPos((t_r + t_l) / 2, 0.9)
-                self.t1.addItem(lri)
-                self.t1.addItem(ti)
-
-    def update_timeline_view(self):
-        self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
-        self.t2.linkedViewChanged(self.t1.vb, self.t2.XAxis)
-
     def closeEvent(self, event):
         """
         Offer lifter opportunity to cancel closing.
@@ -438,20 +460,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Methods for utility
 
-    def handle_color_selection(self, event, x, y, flags, frame):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.mask_colors.append(frame[y, x].tolist())
-            self.selecting_active = True
-        elif event == cv2.EVENT_MOUSEMOVE:
-            if self.selecting_active is True:
-                self.mask_colors.append(frame[y, x].tolist())
-        elif event == cv2.EVENT_LBUTTONUP:
-            self.selecting_active = False
-        elif event == cv2.EVENT_RBUTTONDOWN:
-            cv2.destroyWindow('Masked')
-            self.mask_colors = deque()
-            self.reset_colors()
-
     def build_filepaths(self):
         """
         Builds a filename based on:
@@ -467,9 +475,9 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         timestamp = time.strftime('%y%m%d-%H%M%S')
         exercise = self.comboExercise.currentText().lower().replace(' ', '')
         kilos = f"{int(round(self.spinKgs.value(), 0))}kg"
-        video_path = os.path.join(self.data_dir, f"{timestamp}_{exercise}_{kilos}.mp4")
-        log_path = os.path.join(self.data_dir, f"{timestamp}_{exercise}_{kilos}.csv")
-        metadata_path = os.path.join(self.data_dir, f"{timestamp}_{exercise}_{kilos}.json")
+        video_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.mp4")
+        log_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.csv")
+        metadata_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.json")
         return [video_path, log_path, metadata_path]
 
 
