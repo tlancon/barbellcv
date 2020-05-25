@@ -53,6 +53,9 @@
   "snatch": {
     "name": "Snatch"
   },
+  "snatchbalance": {
+    "name": "Snatch Balance"
+  },
   "snatchpull": {
     "name": "Snatch Pull"
   },
