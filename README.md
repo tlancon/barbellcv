@@ -4,7 +4,7 @@
 Get started with velocity-based training with nothing but a laptop, a webcam,
 and a high contrast marker on your barbell.
 
-
+![Power snatch logged in barbellcv.](doc/power_snatch_example.png)
 
 ## Quick Start
 
@@ -32,9 +32,14 @@ Press Enter to escape the preview.
 10. After lifting, press the Enter key to complete the set
 11. In a few seconds, the results for the set will be shown
 
+![Output from example set.](doc/test_reps_annotated.png)
+
 ## Instructions
 *More in-depth instructions coming soon.*
 
 ## Limitations
 *As I test this setup more I will learn more about its accuracy and what the limitations are, then update
-this section. Suffice it to say that all results should be taken with a grain of salt until verified!*
+this section. Suffice it to say that all results should be taken with a grain of salt until verified.*
+
+*If you install this program and use it for your training, I'd love to hear your feedback. For any
+bugs or suggestions please open an issue here.*
