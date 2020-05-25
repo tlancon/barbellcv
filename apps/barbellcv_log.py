@@ -18,7 +18,7 @@ qtCreatorFile = os.path.abspath('./apps/barbellcv_log.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 
-class BarbellCVApp(QtWidgets.QMainWindow, Ui_MainWindow):
+class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)

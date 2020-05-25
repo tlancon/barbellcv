@@ -7,7 +7,7 @@ import qdarkstyle
 import pyqtgraph as pg
 from PyQt5 import QtWidgets
 # Custom imports
-from apps import barbellcv
+from apps import barbellcv_log
 
 pg.setConfigOption('background', '#19232D')
 pg.setConfigOptions(antialias=True)
@@ -20,7 +20,7 @@ if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = barbellcv.BarbellCVApp()
+    window = barbellcv_log.BarbellCVLogApp()
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     window.show()
     sys.exit(app.exec_())
