@@ -8,13 +8,11 @@ from collections import deque
 import cv2
 import qdarkstyle
 import numpy as np
-import pandas as pd
 import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets, uic
-from scipy.signal import medfilt
 from scipy.ndimage import label
 # Custom imports
-import utilities
+from utils import analyze, webcam
 
 pg.setConfigOption('background', '#19232D')
 pg.setConfigOptions(antialias=True)
@@ -45,7 +43,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Set up camera options
         # Find available cameras
-        self.camera_list = utilities.list_available_cameras()
+        self.camera_list = webcam.list_available_cameras()
         for c in self.camera_list:
             self.comboCamera.addItem(str(c))
         # Set up rotation
@@ -173,7 +171,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setEnabled(False)
         self.buttonLogSet.setEnabled(False)
         # When implemented: self.buttonAnalyzeSet.setEnabled(False)
-        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
+        cap = webcam.initiate_camera(self.comboCamera.currentIndex())
         while True:
             _, frame = cap.read()
             frame = np.rot90(frame, self.comboRotation.currentIndex())
@@ -203,7 +201,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # When implemented: self.buttonAnalyzeSet.setEnabled(False)
         self.selecting = True
         n_90_rotations = self.comboRotation.currentIndex()
-        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
+        cap = webcam.initiate_camera(self.comboCamera.currentIndex())
         while True:
             _, frame = cap.read()
             frame = np.rot90(frame, n_90_rotations)
@@ -220,7 +218,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 lower = np.array([self.spinMinHue.value(), self.spinMinSaturation.value(), self.spinMinValue.value()])
                 upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
                 masked = cv2.bitwise_and(frame, frame,
-                                         mask=utilities.apply_mask(frame, lower, upper, self.smoothing_kernel))
+                                         mask=analyze.apply_mask(frame, lower, upper, self.smoothing_kernel))
                 cv2.imshow('Masked', masked)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('\r'):
@@ -306,7 +304,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         path_y = np.array([], dtype=np.float32)
         path_radii = np.array([], dtype=np.float32)
         # Camera setup
-        cap = utilities.initiate_camera(self.comboCamera.currentIndex())
+        cap = webcam.initiate_camera(self.comboCamera.currentIndex())
         time.sleep(2)
         if n_90_rotations in [0, 2]:
             width = int(cap.get(3))
@@ -321,7 +319,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             frame = cv2.UMat(np.rot90(frame, n_90_rotations))
             lower = np.array([self.spinMinHue.value(), self.spinMinSaturation.value(), self.spinMinValue.value()])
             upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
-            masked = utilities.apply_mask(frame, lower, upper, self.smoothing_kernel)
+            masked = analyze.apply_mask(frame, lower, upper, self.smoothing_kernel)
             contours, _ = cv2.findContours(masked, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             # Only track points if a contour is found
             if len(contours) != 0:
@@ -351,10 +349,10 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Do the actual analysis
         # First, correct Y for video height since Y increases going DOWN
         path_y = height - path_y
-        set_data = utilities.analyze_set(path_time, path_x, path_y, path_radii, self.spinDiameter.value())
+        set_data = analyze.analyze_set(path_time, path_x, path_y, path_radii, self.spinDiameter.value())
         set_data.to_csv(log_file)
         # Convert the video to the correct framerate and trace the bar path
-        utilities.post_process_video(video_file, n_frames, set_data)
+        analyze.post_process_video(video_file, n_frames, set_data)
         # Compute stats for each rep
         reps_labeled, n_reps = label(set_data['Reps'].values)
         set_metadata['number_of_reps'] = n_reps
