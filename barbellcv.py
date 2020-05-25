@@ -98,7 +98,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cropping = False  # Whether the lifer is currently cropping
 
         # Globals that need sharing throughout the app
-        self.output_dir = os.path.abspath(os.path.dirname('./data/'))
         self.mask_colors = deque()
         self.table_colors = ['#76B041', '#E4572E']  # [Good rep, bad rep]
         self.smoothing_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
@@ -112,7 +111,6 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         settings_file = open('./resources/settings.json')
         settings = json.load(settings_file)
         settings_file.close()
-
         try:
             if settings['camera'] in self.camera_list:
                 self.comboCamera.setCurrentIndex(settings['camera'])
@@ -233,10 +231,12 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         m_pen = pg.mkPen(color='#76B041', width=1.5)
         self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
 
+        # This could be gleaned from set metadata if that dict was passed here, but it's easy/more clear to just
+        # recompute this one quick function
         reps_labeled, n_reps = label(data['Reps'].values)
         if n_reps != 0:
             for rep in range(1, n_reps + 1):
-                indices = [reps_labeled == rep]
+                indices = tuple([reps_labeled == rep])
                 t_l = data['Time'].values[indices][0]
                 t_r = data['Time'].values[indices][-1]
                 pk_vel = np.max(data['Velocity'].values[indices])
@@ -426,7 +426,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         ycal = set_data['Y_m'].values
         rep_stats = {}
         for rep in range(1, n_reps + 1):
-            indices = [reps_labeled == rep]
+            indices = tuple([reps_labeled == rep])
             rep_stats[f"rep{rep}"] = {}
             rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[indices])
             rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[indices])
@@ -438,7 +438,7 @@ class KiloCountLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         set_metadata['rep_stats'] = rep_stats
         # Update the table and plots
         self.update_table(set_metadata['rep_stats'])
-        self.update_plots(set_data)
+        self.update_plots(set_data, set_metadata['rep_stats'])
 
         # Adjust UI back
         self.statusbar.clearMessage()
