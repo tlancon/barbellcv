@@ -1,5 +1,7 @@
+import time
 import cv2
 import numpy as np
+from scipy.signal import medfilt
 from scipy.ndimage.filters import maximum_filter1d, minimum_filter1d
 
 
@@ -120,3 +122,59 @@ def find_reps(y, threshold, open_size, close_size):
     rep_signal = minimum_filter1d(maximum_filter1d(rep_signal, close_size), close_size)
 
     return rep_signal
+
+
+def post_process_video(video_file, n_frames, set_data):
+    """
+    Opens a video file, traces the bar path, then saves it back to disk with the correct framerate.
+
+    Parameters
+    ----------
+    video_file : string
+        Path to the video file.
+    n_frames : int
+        Number of frames of the video.
+    set_data : DataFrame
+        Full DataFrame obtained from analyzing the set containing (at minimum) the t, x, y coordinates of the bar.
+    """
+
+    # Get smoothed motion to remove outliers and make path nicer
+    xsmooth = medfilt(set_data['X_pix'].values, 7)
+    ysmooth = medfilt(set_data['Y_pix'].values, 7)
+    # Make lists of smoothed points for each set
+    # rep_points = {}
+    # for r in range(1, np.max(set_data['Reps'].values) + 1):
+    #     rep_points[f"{r}"] = [xsmooth[set_data['Reps'].values==r], ysmooth[set_data['Reps'].values==r]]
+
+    # Open video stream
+    cap = cv2.VideoCapture(video_file)
+    if cap.isOpened() is False:
+        print('Camera unable to be opened.')
+        # TODO Change this to a message box
+    time.sleep(1)
+    width = int(cap.get(3))
+    height = int(cap.get(4))
+    # Estimate correct fps and save to that
+    fps = int(n_frames / set_data['Time'].values[-1])
+    video_out = cv2.VideoWriter(video_file.replace('.mp4', '_traced.mp4'),
+                                cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+    current_frame = 0
+    while True:
+        ret, frame = cap.read()
+        if ret is False:
+            break
+        if current_frame > 6:
+            try:
+                for cf in range(5, current_frame-1):
+                    xy1 = (int(xsmooth[cf-1]), int(ysmooth[cf-1]))
+                    xy2 = (int(xsmooth[cf]), int(ysmooth[cf]))
+                    cv2.line(frame, xy1, xy2, (255, 255, 255), 1)
+                    # TODO: Plot max velocities in a different color or as a different size
+                    # TODO Fix indexing to avoid dotted line look
+            except IndexError:
+                pass
+        video_out.write(frame)
+        current_frame += 1
+    cap.release()
+    video_out.release()
+    cv2.destroyAllWindows()
