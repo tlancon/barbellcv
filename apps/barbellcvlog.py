@@ -112,6 +112,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.spinMinValue.setValue(settings['colors']['min_value'])
             self.spinMaxValue.setValue(settings['colors']['max_value'])
             self.spinDiameter.setValue(settings['diameter'])
+            self.lineEditLifter.setText(settings['lifter'])
         except KeyError:
             print('Some settings not found in settings.json. Initializing with defaults instead.')
 
@@ -127,7 +128,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                         'max_saturation': self.spinMaxSaturation.value(),
                         'min_value': self.spinMinValue.value(),
                         'max_value': self.spinMaxValue.value(),
-                    }, 'diameter': self.spinDiameter.value()}
+                    }, 'diameter': self.spinDiameter.value(),
+                    'lifter': self.lineEditLifter.text()
+                    }
         settings_file = open('./resources/settings.json', 'w')
         json.dump(settings, settings_file, indent=4)
         settings_file.close()
