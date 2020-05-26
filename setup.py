@@ -5,7 +5,7 @@ with open('requirements.txt', 'r') as fc:
 
 setuptools.setup(
     name='barbellcv',
-    version='0.0.0',
+    version='0.1.0',
     author='Trevor Lancon',
     description='Interactive velocity-based tracking for barbell movements.',
     long_description='Track the path, velocity, power output, and time to complete reps for barbell movements using'
