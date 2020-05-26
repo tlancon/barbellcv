@@ -15,6 +15,7 @@ pg.setConfigOptions(antialias=True)
 # ALL data is saved to the data directory for now - this needs to exist
 if os.path.isdir('./data/') is False:
     os.mkdir('./data/')
+# Logs and videos are saved to subdirectories named with date stamps
 if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
     os.mkdir(f"./data/{time.strftime('%y%m%d')}")
 
