@@ -27,9 +27,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Connect signals
         self.buttonPreview.clicked.connect(self.preview_camera)
         self.buttonSelectColor.clicked.connect(self.select_colors)
+        self.buttonSaveSettings.clicked.connect(self.save_settings())
+        self.buttonLogSet.clicked.connect(self.log_set)
         self.spinLbs.editingFinished.connect(self.lbs_changed)
         self.spinKgs.editingFinished.connect(self.kgs_changed)
-        self.buttonLogSet.clicked.connect(self.log_set)
 
         # Set up camera options
         # Find available cameras
@@ -120,7 +121,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Saves settings for a future session.
         """
-        settings = {'camera': self.comboCamera.currentIndex(), 'rotation': self.comboRotation.currentIndex(),
+        settings = {'camera': self.comboCamera.currentIndex(),
+                    'rotation': self.comboRotation.currentIndex(),
                     'colors': {
                         'min_hue': self.spinMinHue.value(),
                         'max_hue': self.spinMaxHue.value(),
