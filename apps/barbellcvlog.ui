@@ -26,260 +26,23 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,1">
-    <item row="7" column="0" colspan="2">
-     <layout class="QGridLayout" name="layoutExercise" columnstretch="2,1,0,0">
-      <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="spinLbs">
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <double>1102.309999999999945</double>
-        </property>
-        <property name="value">
-         <double>45.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="labelKgs">
-        <property name="text">
-         <string>kgs</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="labelLbs">
-        <property name="text">
-         <string>lbs</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="spinKgs">
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <double>501.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>20.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QComboBox" name="comboExercise"/>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QLabel" name="labelExercise">
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Exercise</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,1,1" columnstretch="0,0,1">
+    <item row="4" column="0" rowspan="2" colspan="2">
+     <widget class="PlotWidget" name="plotMotion" native="true"/>
     </item>
-    <item row="9" column="1">
-     <widget class="QPushButton" name="buttonAnalyzeSet">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Analyze Set</string>
-      </property>
-     </widget>
+    <item row="1" column="2">
+     <widget class="QTableWidget" name="tableSetStats"/>
     </item>
-    <item row="8" column="0" colspan="2">
-     <widget class="Line" name="lineSep4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
+    <item row="4" column="2" rowspan="2">
+     <widget class="PlotWidget" name="plotTimeline" native="true"/>
     </item>
-    <item row="9" column="0">
-     <widget class="QPushButton" name="buttonLogSet">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>8</pointsize>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Log Set</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="Line" name="lineSep3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="2">
-     <widget class="Line" name="lineSep2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="Line" name="lineSep1">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <layout class="QGridLayout" name="layoutMarkerColor" columnstretch="1,1,0,1,1">
-      <item row="1" column="3">
-       <widget class="QSpinBox" name="spinMaxHue">
-        <property name="maximum">
-         <number>180</number>
-        </property>
-        <property name="value">
-         <number>180</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QSpinBox" name="spinMaxSaturation">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="value">
-         <number>255</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelHue">
-        <property name="text">
-         <string>Hue</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="spinMinHue">
-        <property name="maximum">
-         <number>180</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QSpinBox" name="spinMaxValue">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="value">
-         <number>255</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelValue">
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelSaturation">
-        <property name="text">
-         <string>Saturation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="labelSepSaturation">
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="5">
-       <widget class="QLabel" name="labelMarkerColor">
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Marker Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QSpinBox" name="spinMinValue">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="labelSepHue">
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4" rowspan="3">
-       <widget class="QPushButton" name="buttonSelectColor">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Select Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="labelSepValue">
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="spinMinSaturation">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="5" column="0" colspan="2">
-     <layout class="QGridLayout" name="layoutMarkerDiameter" columnstretch="2,0">
-      <item row="0" column="0" colspan="2">
+    <item row="1" column="0" colspan="2">
+     <layout class="QGridLayout" name="layoutMarkerColor" columnstretch="1,0,0,0,0">
+      <item row="5" column="0">
        <widget class="QLabel" name="labelMarkerDiameter">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
         <property name="text">
@@ -287,25 +50,116 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="labelMarkerUnits">
+      <item row="7" column="0" rowspan="2">
+       <widget class="QLabel" name="labelWeight">
         <property name="text">
-         <string>mm</string>
+         <string>Weight</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="labelExercise">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Exercise</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="labelLifter">
+        <property name="text">
+         <string>Lifter</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="3">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Save Settings</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="spinMinHue">
+        <property name="maximum">
+         <number>180</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelHue">
+        <property name="text">
+         <string>Hue</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelValue">
+        <property name="text">
+         <string>Value</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelSaturation">
+        <property name="text">
+         <string>Saturation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="spinMinValue">
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="spinMinSaturation">
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QComboBox" name="comboRotation"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCamera">
+        <property name="text">
+         <string>Camera</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="4">
+       <widget class="Line" name="lineSep3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QSpinBox" name="spinDiameter">
-        <property name="maximum">
-         <number>1000</number>
+       <widget class="QLabel" name="labelRotation">
+        <property name="text">
+         <string>Camera Rotation</string>
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item row="0" column="0" rowspan="2" colspan="2">
-     <layout class="QGridLayout" name="layoutMarker" columnstretch="1,1,1">
-      <item row="2" column="2" rowspan="2">
+      <item row="11" column="0" colspan="4">
+       <widget class="Line" name="lineSep4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1" colspan="2">
+       <widget class="QComboBox" name="comboExercise"/>
+      </item>
+      <item row="0" column="3" rowspan="2">
        <widget class="QPushButton" name="buttonPreview">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -318,48 +172,145 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="comboRotation"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelRotation">
+      <item row="2" column="3" rowspan="3">
+       <widget class="QPushButton" name="buttonSelectColor">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
-         <string>Rotation</string>
+         <string>Select Color</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="0" column="1" colspan="2">
        <widget class="QComboBox" name="comboCamera"/>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelCamera">
-        <property name="text">
-         <string>Camera</string>
+      <item row="12" column="0" colspan="3">
+       <widget class="QLineEdit" name="lineEditLogPath"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="spinLbs">
+        <property name="decimals">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <double>1102.309999999999945</double>
+        </property>
+        <property name="value">
+         <double>45.000000000000000</double>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
-       <widget class="QLabel" name="labelCameraOptions">
+      <item row="5" column="1">
+       <widget class="QSpinBox" name="spinDiameter">
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3" rowspan="4">
+       <widget class="QPushButton" name="buttonLogSet">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
          </font>
         </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
         <property name="text">
-         <string>Camera Options</string>
+         <string>Log Set</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="3">
+       <widget class="QPushButton" name="buttonOpenSet">
+        <property name="text">
+         <string>Open Set</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QLabel" name="labelKgs">
+        <property name="text">
+         <string>kgs</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QDoubleSpinBox" name="spinKgs">
+        <property name="decimals">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <double>501.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>20.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QSpinBox" name="spinMaxValue">
+        <property name="maximum">
+         <number>255</number>
+        </property>
+        <property name="value">
+         <number>255</number>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QLabel" name="labelLbs">
+        <property name="text">
+         <string>lbs</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="spinMaxHue">
+        <property name="maximum">
+         <number>180</number>
+        </property>
+        <property name="value">
+         <number>180</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QSpinBox" name="spinMaxSaturation">
+        <property name="maximum">
+         <number>255</number>
+        </property>
+        <property name="value">
+         <number>255</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="labelMarkerUnits">
+        <property name="text">
+         <string>mm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1" colspan="2">
+       <widget class="QLineEdit" name="lineEditLifter">
+        <property name="text">
+         <string>Name</string>
         </property>
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="0" column="2" rowspan="10">
-     <widget class="QTableWidget" name="tableSetStats"/>
-    </item>
-    <item row="10" column="2">
-     <widget class="PlotWidget" name="plotTimeline" native="true"/>
-    </item>
-    <item row="10" column="0" colspan="2">
-     <widget class="PlotWidget" name="plotMotion" native="true"/>
     </item>
    </layout>
   </widget>
