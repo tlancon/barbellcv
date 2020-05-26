@@ -9,5 +9,6 @@
         "min_value": 0,
         "max_value": 255
     },
-    "diameter": 83
+    "diameter": 83,
+    "name": "Name"
 }
