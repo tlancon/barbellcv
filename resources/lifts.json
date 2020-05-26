@@ -2,6 +2,9 @@
   "backsquat": {
     "name": "Back Squat"
   },
+  "benchpress": {
+    "name": "Bench Press"
+  },
   "clean": {
     "name": "Clean"
   },
@@ -31,6 +34,9 @@
   },
   "hangsnatch": {
     "name": "Hang Snatch"
+  },
+  "inclinebenchpress": {
+    "name": "Incline Bench Press"
   },
   "jerk": {
     "name": "Jerk"
