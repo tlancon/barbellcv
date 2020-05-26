@@ -14,7 +14,7 @@ from utils import analyze, webcam
 
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
 
-qtCreatorFile = os.path.abspath('./apps/barbellcv_log.ui')
+qtCreatorFile = os.path.abspath('./apps/barbellcvlog.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 
