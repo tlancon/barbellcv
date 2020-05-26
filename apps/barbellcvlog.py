@@ -27,7 +27,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Connect signals
         self.buttonPreview.clicked.connect(self.preview_camera)
         self.buttonSelectColor.clicked.connect(self.select_colors)
-        self.buttonSaveSettings.clicked.connect(self.save_settings())
+        self.buttonSaveSettings.clicked.connect(self.save_settings)
         self.buttonLogSet.clicked.connect(self.log_set)
         self.spinLbs.editingFinished.connect(self.lbs_changed)
         self.spinKgs.editingFinished.connect(self.kgs_changed)

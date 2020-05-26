@@ -69,15 +69,11 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
-       <widget class="QLabel" name="labelLifter">
-        <property name="text">
-         <string>Lifter</string>
-        </property>
-       </widget>
+      <item row="12" column="0" colspan="3">
+       <widget class="QLineEdit" name="lineEditLogPath"/>
       </item>
       <item row="5" column="3">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="buttonSaveSettings">
         <property name="text">
          <string>Save Settings</string>
         </property>
@@ -187,9 +183,6 @@
       </item>
       <item row="0" column="1" colspan="2">
        <widget class="QComboBox" name="comboCamera"/>
-      </item>
-      <item row="12" column="0" colspan="3">
-       <widget class="QLineEdit" name="lineEditLogPath"/>
       </item>
       <item row="7" column="1">
        <widget class="QDoubleSpinBox" name="spinLbs">
@@ -306,7 +299,14 @@
       <item row="10" column="1" colspan="2">
        <widget class="QLineEdit" name="lineEditLifter">
         <property name="text">
-         <string>Name</string>
+         <string>Lifter</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="labelLifter">
+        <property name="text">
+         <string>Lifter</string>
         </property>
        </widget>
       </item>
