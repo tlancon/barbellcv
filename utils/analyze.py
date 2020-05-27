@@ -96,8 +96,11 @@ def analyze_set(t, x, y, r, diameter):
 
     Returns
     -------
-    DataFrame
-        A new DataFrame with updated information for more advanced analytics.
+    List
+        Index 0: DataFrame
+            A new DataFrame with updated information for more advanced analytics.
+        Index 1: Float
+            Pixel calibration factor used to convert pixels to meters.
     """
 
     # Need to zero out bullshit numbers like 3.434236345E-120 or some shit
@@ -140,7 +143,7 @@ def analyze_set(t, x, y, r, diameter):
     set_analyzed['Velocity'] = velocity
     set_analyzed['Reps'] = reps_binary
 
-    return set_analyzed
+    return set_analyzed, calibration
 
 
 def post_process_video(video_file, n_frames, set_data):
