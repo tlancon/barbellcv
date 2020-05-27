@@ -267,7 +267,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.comboCamera.setEnabled(False)
         self.buttonSelectColor.setEnabled(False)
         self.buttonLogSet.setEnabled(False)
-        # When implemented: self.buttonAnalyzeSet.setEnabled(False)
         cap = webcam.initiate_camera(self.comboCamera.currentIndex())
         while True:
             _, frame = cap.read()
@@ -283,7 +282,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setEnabled(True)
         self.buttonLogSet.setEnabled(True)
         self.statusbar.clearMessage()
-        # When implemented: self.buttonAnalyzeSet.setEnabled(True)
 
     def select_colors(self):
         """
@@ -295,7 +293,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setText('Press Enter\nto finish.')
         self.buttonPreview.setEnabled(False)
         self.buttonLogSet.setEnabled(False)
-        # When implemented: self.buttonAnalyzeSet.setEnabled(False)
         self.selecting = True
         n_90_rotations = self.comboRotation.currentIndex()
         cap = webcam.initiate_camera(self.comboCamera.currentIndex())
@@ -325,7 +322,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selecting = False
         self.buttonPreview.setEnabled(True)
         self.buttonLogSet.setEnabled(True)
-        # When implemented: self.buttonAnalyzeSet.setEnabled(True)
         self.buttonSelectColor.setText('Select Color')
         self.statusbar.clearMessage()
 
@@ -345,17 +341,18 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonLogSet.setText('Press Enter\nto finish.')
         self.buttonPreview.setEnabled(False)
         self.buttonSelectColor.setEnabled(False)
-        self.buttonAnalyzeSet.setEnabled(False)
         self.tracking = True
         # Prepare set metadata
         video_file, log_file, meta_file = self.build_filepaths()
         set_metadata = {}
         set_metadata['raw_video_file'] = video_file
         set_metadata['log_file'] = log_file
+        set_metadata['lifter'] = self.lineEditLifter.text()
         set_metadata['exercise'] = self.comboExercise.currentText()
         set_metadata['weight'] = self.spinKgs.value()
-        set_metadata['calibration_colors'] = list(self.mask_colors)
+        set_metadata['color_calibration'] = list(self.mask_colors)
         set_metadata['nominal_diameter'] = self.spinDiameter.value()
+        set_metadata['pixel_calibration'] = -1.0
         # Initialize
         n_90_rotations = self.comboRotation.currentIndex()
         n_frames = 0
@@ -405,14 +402,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonLogSet.setText('Log Set')
         self.buttonPreview.setEnabled(True)
         self.buttonSelectColor.setEnabled(True)
-        self.buttonAnalyzeSet.setEnabled(True)
         # Do the actual analysis
         # First, correct Y for video height since Y increases going DOWN
         path_y = height - path_y
-        set_data = analyze.analyze_set(path_time, path_x, path_y, path_radii, self.spinDiameter.value())
+        set_data, set_metadata['pixel_calibration'] = analyze.analyze_set(path_time, path_x, path_y, path_radii,
+                                                                          self.spinDiameter.value())
         set_data.to_csv(log_file)
         # Convert the video to the correct framerate and trace the bar path
-        analyze.post_process_video(video_file, n_frames, set_data)
+        # Removing for now - major bottleneck in speed and tracing is not correct
+        # analyze.post_process_video(video_file, n_frames, set_data)
         # Compute stats for each rep
         reps_labeled, n_reps = label(set_data['Reps'].values)
         set_metadata['number_of_reps'] = n_reps
