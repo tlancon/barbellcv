@@ -343,7 +343,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setEnabled(False)
         self.tracking = True
         # Prepare set metadata
-        video_file, log_file, meta_file = self.build_filepaths()
+        video_file, log_file = self.build_filepaths()
         set_stats = {'raw_video_file': os.path.abspath(video_file),
                      'log_file': os.path.abspath(log_file),
                      'lifter': self.lineEditLifter.text(),
@@ -462,12 +462,11 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Returns
         -------
         list
-            Paths to use for saving a video (index 0), a log (index 2), and the resulting metadata.
+            Paths to use for saving a video (index 0) and a log (index 1).
         """
         timestamp = time.strftime('%y%m%d-%H%M%S')
         exercise = self.comboExercise.currentText().lower().replace(' ', '')
         kilos = f"{int(round(self.spinKgs.value(), 0))}kg"
         video_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.mp4")
         log_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.csv")
-        metadata_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.json")
-        return [video_path, log_path, metadata_path]
+        return [video_path, log_path]
