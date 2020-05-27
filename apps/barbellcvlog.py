@@ -389,6 +389,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             video_out.write(frame)
             n_frames += 1
             key = cv2.waitKey(1) & 0xFF
+            if key == 27:
+                self.tracking = False
+                cap.release()
+                video_out.release()
+                cv2.destroyAllWindows()
+                self.buttonLogSet.setText('Log Set')
+                self.buttonPreview.setEnabled(True)
+                self.buttonSelectColor.setEnabled(True)
+                return
             if key == ord('\r'):
                 self.tracking = False
             if self.tracking is False:
