@@ -37,7 +37,7 @@
      <widget class="PlotWidget" name="plotTimeline" native="true"/>
     </item>
     <item row="1" column="0" colspan="2">
-     <layout class="QGridLayout" name="layoutMarkerColor" columnstretch="1,0,0,0,0">
+     <layout class="QGridLayout" name="layoutMarkerColor" columnstretch="1,0,0,0">
       <item row="5" column="0">
        <widget class="QLabel" name="labelMarkerDiameter">
         <property name="font">
@@ -132,7 +132,7 @@
        </widget>
       </item>
       <item row="6" column="0" colspan="4">
-       <widget class="Line" name="lineSep3">
+       <widget class="Line" name="lineSep1">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -146,7 +146,7 @@
        </widget>
       </item>
       <item row="11" column="0" colspan="4">
-       <widget class="Line" name="lineSep4">
+       <widget class="Line" name="lineSep2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -201,27 +201,6 @@
        <widget class="QSpinBox" name="spinDiameter">
         <property name="maximum">
          <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="3" rowspan="4">
-       <widget class="QPushButton" name="buttonLogSet">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Log Set</string>
         </property>
        </widget>
       </item>
@@ -307,6 +286,27 @@
        <widget class="QLabel" name="labelLifter">
         <property name="text">
          <string>Lifter</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3" rowspan="4">
+       <widget class="QPushButton" name="buttonLogSet">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Log Set</string>
         </property>
        </widget>
       </item>
