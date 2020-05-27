@@ -344,12 +344,11 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tracking = True
         # Prepare set metadata
         video_file, log_file, meta_file = self.build_filepaths()
-        set_stats = {'raw_video_file': video_file,
-                     'log_file': log_file,
+        set_stats = {'raw_video_file': os.path.abspath(video_file),
+                     'log_file': os.path.abspath(log_file),
                      'lifter': self.lineEditLifter.text(),
                      'exercise': self.comboExercise.currentText(),
                      'weight': self.spinKgs.value(),
-                     'color_calibration': list(self.mask_colors),
                      'nominal_diameter': self.spinDiameter.value(),
                      'pixel_calibration': -1.0}
         # Initialize
@@ -427,9 +426,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             rep_stats[f"rep{rep}"]['x_rom'] = np.max(xcal[idx]) - np.min(xcal[idx])
             rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[idx]) - np.min(ycal[idx])
             rep_stats[f"rep{rep}"]['time_to_complete'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
-        set_stats['rep_stats'] = rep_stats
         # Update the table and plots
-        self.update_table(set_stats['rep_stats'])
+        set_stats['rep_stats'] = rep_stats
+        print(set_stats)
+        self.update_table(rep_stats)
         self.update_plots(set_data)
 
         # Adjust UI back
