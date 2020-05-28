@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets, uic
-from scipy.ndimage import label
 # Custom imports
 from utils import analyze, webcam
 
@@ -412,32 +411,17 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Do the actual analysis
         # First, correct Y for video height since Y increases going DOWN
         path_y = height - path_y
-        set_data, set_stats['pixel_calibration'] = analyze.analyze_set(path_time, path_x, path_y, path_radii, self.spinDiameter.value())
+        set_data, set_stats['pixel_calibration'] = analyze.analyze_set(path_time, path_x, path_y,
+                                                                       path_radii, self.spinDiameter.value())
         set_data.to_csv(log_file)
         self.lineEditLogPath.setText(os.path.abspath(log_file))
         # Convert the video to the correct framerate and trace the bar path
         # Removing for now - major bottleneck in speed and tracing is not correct
         # analyze.post_process_video(video_file, n_frames, set_data)
-        # Compute stats for each rep
-        reps_labeled, n_reps = label(set_data['Reps'].values)
-        set_stats['number_of_reps'] = n_reps
-        velocity = set_data['Velocity'].values
-        xcal = set_data['X_m'].values
-        ycal = set_data['Y_m'].values
-        rep_stats = {}
-        for rep in range(1, n_reps + 1):
-            idx = tuple([reps_labeled == rep])
-            rep_stats[f"rep{rep}"] = {}
-            rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[idx])
-            rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[idx])
-            rep_stats[f"rep{rep}"]['peak_power'] = self.spinKgs.value() * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity']
-            rep_stats[f"rep{rep}"]['height_when_peaked'] = ycal[idx][np.argmax(velocity[idx])]
-            rep_stats[f"rep{rep}"]['x_rom'] = np.max(xcal[idx]) - np.min(xcal[idx])
-            rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[idx]) - np.min(ycal[idx])
-            rep_stats[f"rep{rep}"]['time_to_complete'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
+        # Compute stats for each rep and update set stats with number of reps
+        set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats)
         # Update the table and plots
         set_stats['rep_stats'] = rep_stats
-        print(set_stats)
         self.update_table(rep_stats)
         self.update_plots(set_data)
 
