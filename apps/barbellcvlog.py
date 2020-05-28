@@ -342,8 +342,12 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonSelectColor.setEnabled(False)
         self.tracking = True
         # Prepare set metadata
-        video_file, log_file = self.build_filepaths()
-        set_stats = {'raw_video_file': os.path.abspath(video_file),
+        set_id = time.strftime('%y%m%d-%H%M%S')
+        exercise = self.comboExercise.currentText().lower().replace(' ', '')
+        video_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.mp4")
+        log_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.csv")
+        set_stats = {'set_id': set_id,
+                     'raw_video_file': os.path.abspath(video_file),
                      'log_file': os.path.abspath(log_file),
                      'lifter': self.lineEditLifter.text(),
                      'exercise': self.comboExercise.currentText(),
@@ -444,22 +448,3 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             event.ignore()
 
     # Methods for utility
-
-    def build_filepaths(self):
-        """
-        Builds a filename based on:
-            Timestamp with format YYYYMMDD-HHMMSS
-            Exercise name
-            Weight in kilograms
-
-        Returns
-        -------
-        list
-            Paths to use for saving a video (index 0) and a log (index 1).
-        """
-        timestamp = time.strftime('%y%m%d-%H%M%S')
-        exercise = self.comboExercise.currentText().lower().replace(' ', '')
-        kilos = f"{int(round(self.spinKgs.value(), 0))}kg"
-        video_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.mp4")
-        log_path = os.path.join(DATA_DIR, f"{timestamp}_{exercise}_{kilos}.csv")
-        return [video_path, log_path]
