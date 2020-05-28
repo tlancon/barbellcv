@@ -193,6 +193,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.tableSetStats.setColumnCount(len(rep_stats.keys()))
         for r, rep in enumerate(rep_stats.keys()):
+            # Uodate table values
             self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
             self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
             self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_power']:.2f}"))
@@ -200,14 +201,19 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['x_rom']:.2f}"))
             self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['y_rom']:.2f}"))
             self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['concentric_time']:.2f}"))
-            if rep_stats[rep]['peak_velocity'] >= 1.2:
+
+            # Update table colors
+            comparator = rep_stats[self.lifts[rep_stats['exercise']]['pf_metric']]
+            condition = self.lifts[rep_stats['exercise']]['pf_criterion']
+            pass_rep = eval(f"{comparator}{condition}")
+            if pass_rep is True:
                 col_color = QtGui.QColor(self.table_colors[0])
             else:
                 col_color = QtGui.QColor(self.table_colors[1])
             for i in range(self.tableSetStats.rowCount()):
                 self.tableSetStats.item(i, r).setBackground(col_color)
 
-    def update_plots(self, set_data, set_stats):
+    def update_plots(self, set_data, set_stats, rep_stats):
         """
         Adapt timeline and motion plots to new log and analysis.
 
@@ -217,7 +223,11 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
         set_stats : Dictionary
             Metadata for the set. The only expected key is number_of_reps.
+         rep_stats : Dictionary
+            Dictionary containing metadata from the current set, including all of the measures to be viewed in the
+            table.
         """
+        # Update plots
         self.t2.clear()
         y_pen = pg.mkPen(color='#E4572E', width=1.5)
         v_pen = pg.mkPen(color='#17BEEB', width=1.5)
@@ -228,16 +238,17 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         m_pen = pg.mkPen(color='#76B041', width=1.5)
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
-        # This could be gleaned from set metadata if that dict was passed here, but it's easy/more clear to just
-        # recompute this one quick function
+        # Update rep highlighting
         n_reps = set_stats['number_of_reps']
         if n_reps != 0:
             for rep in range(1, n_reps + 1):
                 idx = tuple([set_data['Reps'].values == rep])
                 t_l = set_data['Time'].values[idx][0]
                 t_r = set_data['Time'].values[idx][-1]
-                pk_vel = np.max(set_data['Velocity'].values[idx])
-                if pk_vel >= 1.2:
+                comparator = rep_stats[self.lifts[rep_stats['exercise']]['pf_metric']]
+                condition = self.lifts[rep_stats['exercise']]['pf_criterion']
+                pass_rep = eval(f"{comparator}{condition}")
+                if pass_rep is True:
                     rep_color = '#76B041'
                 else:
                     rep_color = '#E4572E'
@@ -344,6 +355,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonPreview.setEnabled(False)
         self.buttonSelectColor.setEnabled(False)
         self.tracking = True
+
         # Prepare set metadata
         set_id = time.strftime('%y%m%d-%H%M%S')
         exercise = self.comboExercise.currentText().lower().replace(' ', '')
@@ -357,6 +369,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                      'weight': self.spinKgs.value(),
                      'nominal_diameter': self.spinDiameter.value(),
                      'pixel_calibration': -1.0}
+
         # Initialize
         n_90_rotations = self.comboRotation.currentIndex()
         n_frames = 0
@@ -364,6 +377,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         path_x = np.array([], dtype=np.float32)
         path_y = np.array([], dtype=np.float32)
         path_radii = np.array([], dtype=np.float32)
+
         # Camera setup
         cap = webcam.initiate_camera(self.comboCamera.currentIndex())
         time.sleep(2)
@@ -382,6 +396,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
             masked = analyze.apply_mask(frame, lower, upper, self.smoothing_kernel)
             contours, _ = cv2.findContours(masked, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
             # Only track points if a contour is found
             if len(contours) != 0:
                 largest = max(contours, key=cv2.contourArea)
@@ -408,6 +423,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tracking = False
             if self.tracking is False:
                 break
+
         # Release hold on camera and write video
         cap.release()
         video_out.release()
@@ -415,6 +431,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonLogSet.setText('Log Set')
         self.buttonPreview.setEnabled(True)
         self.buttonSelectColor.setEnabled(True)
+
         # Do the actual analysis
         # First, correct Y for video height since Y increases going DOWN
         path_y = height - path_y
@@ -422,15 +439,18 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                        path_radii, self.spinDiameter.value())
         set_data.to_csv(log_file)
         self.lineEditLogPath.setText(os.path.abspath(log_file))
+
         # Convert the video to the correct framerate and trace the bar path
         # Removing for now - major bottleneck in speed and tracing is not correct
         # analyze.post_process_video(video_file, n_frames, set_data)
+
         # Compute stats for each rep and update set stats with number of reps
         set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats, exercise)
-        # Update the table and plots
         set_stats['rep_stats'] = rep_stats
+
+        # Update the table and plots
         self.update_table(rep_stats)
-        self.update_plots(set_data)
+        self.update_plots(set_data, set_stats, rep_stats)
 
         # Adjust UI back
         self.statusbar.clearMessage()
