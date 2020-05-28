@@ -1,77 +1,127 @@
 {
   "backsquat": {
-    "name": "Back Squat"
+    "name": "Back Squat",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "benchpress": {
-    "name": "Bench Press"
+    "name": "Bench Press",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "clean": {
-    "name": "Clean"
+    "name": "Clean",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.7"
   },
   "cleanandjerk": {
-    "name": "Clean and Jerk"
+    "name": "Clean and Jerk",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.8"
   },
   "cleanpull": {
-    "name": "Clean Pull"
+    "name": "Clean Pull",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=0.7"
   },
   "complex": {
-    "name": "Complex"
+    "name": "Complex",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "deadlift": {
-    "name": "Deadlift"
+    "name": "Deadlift",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "frontsquat": {
-    "name": "Front Squat"
+    "name": "Front Squat",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "hangclean": {
-    "name": "Hang Clean"
+    "name": "Hang Clean",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.7"
   },
   "hangpowerclean": {
-    "name": "Hang Power Clean"
+    "name": "Hang Power Clean",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.9"
   },
   "hangpowersnatch": {
-    "name": "Hang Power Snatch"
+    "name": "Hang Power Snatch",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.2"
   },
   "hangsnatch": {
-    "name": "Hang Snatch"
+    "name": "Hang Snatch",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.0"
   },
   "inclinebenchpress": {
-    "name": "Incline Bench Press"
+    "name": "Incline Bench Press",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "jerk": {
-    "name": "Jerk"
+    "name": "Jerk",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.8"
   },
   "musclesnatch": {
-    "name": "Muscle Snatch"
+    "name": "Muscle Snatch",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "overheadpress": {
-    "name": "Overhead Press"
+    "name": "Overhead Press",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
+  },
+  "overheadsquat": {
+    "name": "Overhead Squat",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "powerclean": {
-    "name": "Power Clean"
+    "name": "Power Clean",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.9"
   },
   "powersnatch": {
-    "name": "Power Snatch"
+    "name": "Power Snatch",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.2"
   },
   "pushpress": {
-    "name": "Push Press"
+    "name": "Push Press",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   },
   "snatch": {
-    "name": "Snatch"
+    "name": "Snatch",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.0"
   },
   "snatchbalance": {
-    "name": "Snatch Balance"
+    "name": "Snatch Balance",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.0"
   },
   "snatchpull": {
-    "name": "Snatch Pull"
+    "name": "Snatch Pull",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=0.7"
   },
   "tallsnatch": {
-    "name": "Tall Snatch"
+    "name": "Tall Snatch",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.0"
   },
-  "testdown": {
-    "name": "TEST DOWN"
-  },
-  "testup": {
-    "name": "TEST UP"
+  "test": {
+    "name": "TEST",
+    "pf_metric": "concentric_time",
+    "pf_criterion": "<=1.0"
   }
 }
