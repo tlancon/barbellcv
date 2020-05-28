@@ -180,7 +180,7 @@ def analyze_reps(set_data, set_stats):
         rep_stats[f"rep{rep}"]['height_when_peaked'] = ycal[idx][np.argmax(velocity[idx])]
         rep_stats[f"rep{rep}"]['x_rom'] = np.max(xcal[idx]) - np.min(xcal[idx])
         rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[idx]) - np.min(ycal[idx])
-        rep_stats[f"rep{rep}"]['time_to_complete'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
+        rep_stats[f"rep{rep}"]['concentric_time'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
 
     return set_stats, rep_stats
 

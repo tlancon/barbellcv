@@ -45,6 +45,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.load_settings()
 
         # Load lifts to dropdown
+        # TODO Check if pass/fail criteria keys are empty and have mechanism to revert back to peak_velocity if not
         dlf = open('./resources/lifts.json', 'r')
         self.lifts = json.load(dlf)
         dlf.close()
@@ -180,26 +181,26 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spinMinValue.setValue(0)
         self.spinMaxValue.setValue(255)
 
-    def update_table(self, metadata):
+    def update_table(self, rep_stats):
         """
         Clear the table and update it with stats from the current set.
 
         Parameters
         ----------
-        metadata : Dictionary
+        rep_stats : Dictionary
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
         """
-        self.tableSetStats.setColumnCount(len(metadata.keys()))
-        for r, rep in enumerate(metadata.keys()):
-            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['average_velocity']:.2f}"))
-            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_velocity']:.2f}"))
-            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['peak_power']:.2f}"))
-            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['height_when_peaked']:.2f}"))
-            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['x_rom']:.2f}"))
-            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['y_rom']:.2f}"))
-            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{metadata[rep]['time_to_complete']:.2f}"))
-            if metadata[rep]['peak_velocity'] >= 1.2:
+        self.tableSetStats.setColumnCount(len(rep_stats.keys()))
+        for r, rep in enumerate(rep_stats.keys()):
+            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
+            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
+            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_power']:.2f}"))
+            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['height_when_peaked']:.2f}"))
+            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['x_rom']:.2f}"))
+            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['y_rom']:.2f}"))
+            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['concentric_time']:.2f}"))
+            if rep_stats[rep]['peak_velocity'] >= 1.2:
                 col_color = QtGui.QColor(self.table_colors[0])
             else:
                 col_color = QtGui.QColor(self.table_colors[1])
