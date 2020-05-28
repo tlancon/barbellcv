@@ -173,6 +173,7 @@ def analyze_reps(set_data, set_stats):
     for rep in range(1, n_reps + 1):
         idx = tuple([reps_labeled == rep])
         rep_stats[f"rep{rep}"] = {}
+        rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
         rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_power'] = set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity']
