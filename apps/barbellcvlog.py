@@ -206,34 +206,36 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             for i in range(self.tableSetStats.rowCount()):
                 self.tableSetStats.item(i, r).setBackground(col_color)
 
-    def update_plots(self, data):
+    def update_plots(self, set_data, set_stats):
         """
         Adapt timeline and motion plots to new log and analysis.
 
         Parameters
         ----------
-        data : DataFrame
+        set_data : DataFrame
             Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
+        set_stats : Dictionary
+            Metadata for the set. The only expected key is number_of_reps.
         """
         self.t2.clear()
         y_pen = pg.mkPen(color='#E4572E', width=1.5)
         v_pen = pg.mkPen(color='#17BEEB', width=1.5)
-        self.t1.plot(data['Time'].values, data['Y_m'].values, pen=y_pen, clear=True)
+        self.t1.plot(set_data['Time'].values, set_data['Y_m'].values, pen=y_pen, clear=True)
         self.t2.addItem(
-            pg.PlotCurveItem(data['Time'].values, data['Velocity'].values, pen=v_pen, clear=True))
+            pg.PlotCurveItem(set_data['Time'].values, set_data['Velocity'].values, pen=v_pen, clear=True))
 
         m_pen = pg.mkPen(color='#76B041', width=1.5)
-        self.xy.plot(data['X_m'].values[20:], data['Y_m'].values[20:], pen=m_pen, clear=True)
+        self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
         # This could be gleaned from set metadata if that dict was passed here, but it's easy/more clear to just
         # recompute this one quick function
-        reps_labeled, n_reps = label(data['Reps'].values)
+        n_reps = set_stats['number_of_reps']
         if n_reps != 0:
             for rep in range(1, n_reps + 1):
-                indices = tuple([reps_labeled == rep])
-                t_l = data['Time'].values[indices][0]
-                t_r = data['Time'].values[indices][-1]
-                pk_vel = np.max(data['Velocity'].values[indices])
+                idx = tuple([set_data['Reps'].values == rep])
+                t_l = set_data['Time'].values[idx][0]
+                t_r = set_data['Time'].values[idx][-1]
+                pk_vel = np.max(set_data['Velocity'].values[idx])
                 if pk_vel >= 1.2:
                     rep_color = '#76B041'
                 else:
