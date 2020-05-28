@@ -426,7 +426,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Removing for now - major bottleneck in speed and tracing is not correct
         # analyze.post_process_video(video_file, n_frames, set_data)
         # Compute stats for each rep and update set stats with number of reps
-        set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats)
+        set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats, exercise)
         # Update the table and plots
         set_stats['rep_stats'] = rep_stats
         self.update_table(rep_stats)

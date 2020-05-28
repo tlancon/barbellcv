@@ -147,7 +147,7 @@ def analyze_set(t, x, y, r, diameter):
     return set_analyzed, calibration
 
 
-def analyze_reps(set_data, set_stats):
+def analyze_reps(set_data, set_stats, movement):
     """
     Given an analyzed set log, calculate metrics for each rep that is found for updating the table and plots.
 
@@ -157,6 +157,8 @@ def analyze_reps(set_data, set_stats):
         Data collected and analyzed from logging the set. Expected columns are Time, Velocity, X_m, Y_m, and Reps.
     set_stats : Dictionary
         Metadata for the set. The only expected keys is weight, but number_of_reps is added and returned.
+    movement : string
+        Name of exercise that must correspond to a key in the lifts dictionary in lifts.json.
 
     Returns
     -------
@@ -174,6 +176,7 @@ def analyze_reps(set_data, set_stats):
         idx = tuple([reps_labeled == rep])
         rep_stats[f"rep{rep}"] = {}
         rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
+        rep_stats[f"rep{rep}"]['exercise'] = movement
         rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_power'] = set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity']
