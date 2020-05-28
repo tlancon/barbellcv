@@ -7,6 +7,7 @@ from collections import deque
 import cv2
 import numpy as np
 import pyqtgraph as pg
+from scipy.ndimage import label
 from PyQt5 import QtGui, QtWidgets, uic
 # Custom imports
 from utils import analyze, webcam
@@ -203,8 +204,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['concentric_time']:.2f}"))
 
             # Update table colors
-            comparator = rep_stats[self.lifts[rep_stats['exercise']]['pf_metric']]
-            condition = self.lifts[rep_stats['exercise']]['pf_criterion']
+            comparator = rep_stats[rep][self.lifts[rep_stats[rep]['exercise']]['pf_metric']]
+            condition = self.lifts[rep_stats[rep]['exercise']]['pf_criterion']
             pass_rep = eval(f"{comparator}{condition}")
             if pass_rep is True:
                 col_color = QtGui.QColor(self.table_colors[0])
@@ -239,14 +240,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
         # Update rep highlighting
-        n_reps = set_stats['number_of_reps']
+        reps_labeled, n_reps = label(set_data['Reps'].values)
         if n_reps != 0:
-            for rep in range(1, n_reps + 1):
-                idx = tuple([set_data['Reps'].values == rep])
+            for r in range(1, n_reps + 1):
+                rep = f"rep{r}"
+                idx = tuple([reps_labeled == r])
                 t_l = set_data['Time'].values[idx][0]
                 t_r = set_data['Time'].values[idx][-1]
-                comparator = rep_stats[self.lifts[rep_stats['exercise']]['pf_metric']]
-                condition = self.lifts[rep_stats['exercise']]['pf_criterion']
+                comparator = rep_stats[rep][self.lifts[rep_stats[rep]['exercise']]['pf_metric']]
+                condition = self.lifts[rep_stats[rep]['exercise']]['pf_criterion']
                 pass_rep = eval(f"{comparator}{condition}")
                 if pass_rep is True:
                     rep_color = '#76B041'
@@ -256,7 +258,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 lri_pen = pg.mkPen(color=rep_color)
                 lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
                 lri.setOpacity(0.3)
-                ti = pg.TextItem(text=f"{rep}", color='#FFC914', anchor=(0.5, 0.5))
+                ti = pg.TextItem(text=f"{r}", color='#FFC914', anchor=(0.5, 0.5))
                 ti.setPos((t_r + t_l) / 2, 0.9)
                 self.t1.addItem(lri)
                 self.t1.addItem(ti)
