@@ -206,6 +206,9 @@
       </item>
       <item row="12" column="3">
        <widget class="QPushButton" name="buttonOpenSet">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Open Set</string>
         </property>
