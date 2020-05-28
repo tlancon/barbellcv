@@ -10,9 +10,11 @@ import pyqtgraph as pg
 from scipy.ndimage import label
 from PyQt5 import QtGui, QtWidgets, uic
 # Custom imports
-from utils import analyze, webcam
+from utils import analyze, webcam, database
 
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
+DB_PATH = os.path.abspath('./data/history.db')
+DB_BACKUP_PATH = os.path.abspath('./data/history_backup.db')
 
 qtCreatorFile = os.path.abspath('./apps/barbellcvlog.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
@@ -194,18 +196,18 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.tableSetStats.setColumnCount(len(rep_stats.keys()))
         for r, rep in enumerate(rep_stats.keys()):
-            # Uodate table values
+            # Update table values
             self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
             self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
             self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_power']:.2f}"))
-            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['height_when_peaked']:.2f}"))
+            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_height']:.2f}"))
             self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['x_rom']:.2f}"))
             self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['y_rom']:.2f}"))
-            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['concentric_time']:.2f}"))
+            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
 
             # Update table colors
-            comparator = rep_stats[rep][self.lifts[rep_stats[rep]['exercise']]['pf_metric']]
-            condition = self.lifts[rep_stats[rep]['exercise']]['pf_criterion']
+            comparator = rep_stats[rep][self.lifts[rep_stats[rep]['lift']]['pf_metric']]
+            condition = self.lifts[rep_stats[rep]['lift']]['pf_criterion']
             pass_rep = eval(f"{comparator}{condition}")
             if pass_rep is True:
                 col_color = QtGui.QColor(self.table_colors[0])
@@ -214,7 +216,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             for i in range(self.tableSetStats.rowCount()):
                 self.tableSetStats.item(i, r).setBackground(col_color)
 
-    def update_plots(self, set_data, set_stats, rep_stats):
+    def update_plots(self, set_data, rep_stats):
         """
         Adapt timeline and motion plots to new log and analysis.
 
@@ -222,8 +224,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         ----------
         set_data : DataFrame
             Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
-        set_stats : Dictionary
-            Metadata for the set. The only expected key is number_of_reps.
          rep_stats : Dictionary
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
@@ -247,8 +247,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 idx = tuple([reps_labeled == r])
                 t_l = set_data['Time'].values[idx][0]
                 t_r = set_data['Time'].values[idx][-1]
-                comparator = rep_stats[rep][self.lifts[rep_stats[rep]['exercise']]['pf_metric']]
-                condition = self.lifts[rep_stats[rep]['exercise']]['pf_criterion']
+                comparator = rep_stats[rep][self.lifts[rep_stats[rep]['lift']]['pf_metric']]
+                condition = self.lifts[rep_stats[rep]['lift']]['pf_criterion']
                 pass_rep = eval(f"{comparator}{condition}")
                 if pass_rep is True:
                     rep_color = '#76B041'
@@ -364,10 +364,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         video_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.mp4")
         log_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.csv")
         set_stats = {'set_id': set_id,
-                     'raw_video_file': os.path.abspath(video_file),
-                     'log_file': os.path.abspath(log_file),
+                     # 'raw_video_file': video_file,
+                     # 'log_file': log_file,
                      'lifter': self.lineEditLifter.text(),
-                     'exercise': self.comboExercise.currentText(),
+                     'lift': self.comboExercise.currentText(),
                      'weight': self.spinKgs.value(),
                      'nominal_diameter': self.spinDiameter.value(),
                      'pixel_calibration': -1.0}
@@ -450,9 +450,13 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats, exercise)
         set_stats['rep_stats'] = rep_stats
 
+        # Update the database
+        database.update_set_history(DB_PATH, set_stats)
+        database.update_rep_history(DB_PATH, rep_stats)
+
         # Update the table and plots
         self.update_table(rep_stats)
-        self.update_plots(set_data, set_stats, rep_stats)
+        self.update_plots(set_data, rep_stats)
 
         # Adjust UI back
         self.statusbar.clearMessage()

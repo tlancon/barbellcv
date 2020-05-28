@@ -158,7 +158,7 @@ def analyze_reps(set_data, set_stats, movement):
     set_stats : Dictionary
         Metadata for the set. The only expected keys is weight, but number_of_reps is added and returned.
     movement : string
-        Name of exercise that must correspond to a key in the lifts dictionary in lifts.json.
+        Name of lift that must correspond to a key in the lifts dictionary in lifts.json.
 
     Returns
     -------
@@ -176,14 +176,15 @@ def analyze_reps(set_data, set_stats, movement):
         idx = tuple([reps_labeled == rep])
         rep_stats[f"rep{rep}"] = {}
         rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
-        rep_stats[f"rep{rep}"]['exercise'] = movement
+        rep_stats[f"rep{rep}"]['set_id'] = set_stats['set_id']
+        rep_stats[f"rep{rep}"]['lift'] = movement
         rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[idx])
         rep_stats[f"rep{rep}"]['peak_power'] = set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity']
-        rep_stats[f"rep{rep}"]['height_when_peaked'] = ycal[idx][np.argmax(velocity[idx])]
+        rep_stats[f"rep{rep}"]['peak_height'] = ycal[idx][np.argmax(velocity[idx])]
         rep_stats[f"rep{rep}"]['x_rom'] = np.max(xcal[idx]) - np.min(xcal[idx])
         rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[idx]) - np.min(ycal[idx])
-        rep_stats[f"rep{rep}"]['concentric_time'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
+        rep_stats[f"rep{rep}"]['t_concentric'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
 
     return set_stats, rep_stats
 

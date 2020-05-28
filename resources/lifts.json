@@ -121,7 +121,7 @@
   },
   "test": {
     "name": "TEST",
-    "pf_metric": "concentric_time",
-    "pf_criterion": "<=1.0"
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=2.0"
   }
 }
