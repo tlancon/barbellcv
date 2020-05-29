@@ -151,6 +151,9 @@ def analyze_reps(set_data, set_stats, movement):
     """
     Given an analyzed set log, calculate metrics for each rep that is found for updating the table and plots.
 
+    Any NumPy results are cast to float32 so they map properly to the real data type in SQLite. See here why this
+    tedious method is used: https://github.com/numpy/numpy/issues/6860
+
     Parameters
     ----------
     set_data : DataFrame
@@ -178,13 +181,13 @@ def analyze_reps(set_data, set_stats, movement):
         rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
         rep_stats[f"rep{rep}"]['set_id'] = set_stats['set_id']
         rep_stats[f"rep{rep}"]['lift'] = movement
-        rep_stats[f"rep{rep}"]['average_velocity'] = np.average(velocity[idx])
-        rep_stats[f"rep{rep}"]['peak_velocity'] = np.max(velocity[idx])
-        rep_stats[f"rep{rep}"]['peak_power'] = set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity']
-        rep_stats[f"rep{rep}"]['peak_height'] = ycal[idx][np.argmax(velocity[idx])]
-        rep_stats[f"rep{rep}"]['x_rom'] = np.max(xcal[idx]) - np.min(xcal[idx])
-        rep_stats[f"rep{rep}"]['y_rom'] = np.max(ycal[idx]) - np.min(ycal[idx])
-        rep_stats[f"rep{rep}"]['t_concentric'] = set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0]
+        rep_stats[f"rep{rep}"]['average_velocity'] = float(np.average(velocity[idx]))
+        rep_stats[f"rep{rep}"]['peak_velocity'] = float(np.max(velocity[idx]))
+        rep_stats[f"rep{rep}"]['peak_power'] = float(set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity'])
+        rep_stats[f"rep{rep}"]['peak_height'] = float(ycal[idx][np.argmax(velocity[idx])])
+        rep_stats[f"rep{rep}"]['x_rom'] = float(np.max(xcal[idx]) - np.min(xcal[idx]))
+        rep_stats[f"rep{rep}"]['y_rom'] = float(np.max(ycal[idx]) - np.min(ycal[idx]))
+        rep_stats[f"rep{rep}"]['t_concentric'] = float(set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0])
 
     return set_stats, rep_stats
 

@@ -86,7 +86,7 @@ def update_rep_history(db_path, rep_stats):
     """
     con = connect_db(db_path)
     c = con.cursor()
-    for rep in rep_stats:
+    for rep in rep_stats.keys():
         sql = 'INSERT OR REPLACE INTO rep_history(' \
               'rep_id,set_id,lift,average_velocity,peak_velocity,peak_power,peak_height,x_rom,y_rom,t_concentric) ' \
               'VALUES (?,?,?,?,?,?,?,?,?,?)'
