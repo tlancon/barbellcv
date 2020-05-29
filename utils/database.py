@@ -50,7 +50,8 @@ def create_db_tables(db_conn):
         peak_height real,
         x_rom real,
         y_rom real,
-        t_concentric real
+        t_concentric real,
+        movement text
         ); """)
 
 
@@ -88,8 +89,8 @@ def update_rep_history(db_path, rep_stats):
     c = con.cursor()
     for rep in rep_stats.keys():
         sql = 'INSERT OR REPLACE INTO rep_history(' \
-              'rep_id,set_id,lift,average_velocity,peak_velocity,peak_power,peak_height,x_rom,y_rom,t_concentric) ' \
-              'VALUES (?,?,?,?,?,?,?,?,?,?)'
+              'rep_id,set_id,lift,average_velocity,peak_velocity,peak_power,peak_height,x_rom,y_rom,t_concentric,movement) ' \
+              'VALUES (?,?,?,?,?,?,?,?,?,?,?)'
         values = list(rep_stats[rep].values())
         c.execute(sql, values)
     con.commit()

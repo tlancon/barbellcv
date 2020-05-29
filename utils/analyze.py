@@ -147,7 +147,7 @@ def analyze_set(t, x, y, r, diameter):
     return set_analyzed, calibration
 
 
-def analyze_reps(set_data, set_stats, movement):
+def analyze_reps(set_data, set_stats, lifts):
     """
     Given an analyzed set log, calculate metrics for each rep that is found for updating the table and plots.
 
@@ -160,8 +160,8 @@ def analyze_reps(set_data, set_stats, movement):
         Data collected and analyzed from logging the set. Expected columns are Time, Velocity, X_m, Y_m, and Reps.
     set_stats : Dictionary
         Metadata for the set. The only expected keys is weight, but number_of_reps is added and returned.
-    movement : string
-        Name of lift that must correspond to a key in the lifts dictionary in lifts.json.
+    lifts : Dictionary
+        Library of lifts from lifts.json.
 
     Returns
     -------
@@ -180,7 +180,7 @@ def analyze_reps(set_data, set_stats, movement):
         rep_stats[f"rep{rep}"] = {}
         rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
         rep_stats[f"rep{rep}"]['set_id'] = set_stats['set_id']
-        rep_stats[f"rep{rep}"]['lift'] = movement
+        rep_stats[f"rep{rep}"]['lift'] = lifts[set_stats['lift']]['name']
         rep_stats[f"rep{rep}"]['average_velocity'] = float(np.average(velocity[idx]))
         rep_stats[f"rep{rep}"]['peak_velocity'] = float(np.max(velocity[idx]))
         rep_stats[f"rep{rep}"]['peak_power'] = float(set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity'])
@@ -188,6 +188,7 @@ def analyze_reps(set_data, set_stats, movement):
         rep_stats[f"rep{rep}"]['x_rom'] = float(np.max(xcal[idx]) - np.min(xcal[idx]))
         rep_stats[f"rep{rep}"]['y_rom'] = float(np.max(ycal[idx]) - np.min(ycal[idx]))
         rep_stats[f"rep{rep}"]['t_concentric'] = float(set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0])
+        rep_stats[f"rep{rep}"]['movement'] = lifts[set_stats['lift']]['name']
 
     return set_stats, rep_stats
 

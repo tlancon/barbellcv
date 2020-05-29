@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import pyqtgraph as pg
 from scipy.ndimage import label
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 # Custom imports
 from utils import analyze, webcam, database
 
@@ -196,7 +196,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.tableSetStats.setColumnCount(len(rep_stats.keys()))
         for r, rep in enumerate(rep_stats.keys()):
-            # Update table values
+            # Update table
+            # Add a combo box that allows the user to select whether they failed the rep, it was a false detection,
+            # or reclassify the rep as a different movement
             cb = QtWidgets.QComboBox(parent=self.tableSetStats)
             cb.addItems(['FALSE', 'FAIL'])
             cb.addItem(self.lifts[rep_stats[rep]['lift']]['name'])
@@ -207,7 +209,12 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 pass
             else:
                 cb.addItems(movements)
-            cb.setCurrentIndex(2)
+            # Make the default currently selected text equal to the name of the lift from lifts.json based on the
+            # selected movement in the rep_stats dict
+            # This is a nasty piece of code, but for this to update correctly when reps are relabeled, you can't just
+            # use setCurrentIndex(2)
+            cb.setCurrentIndex(cb.findText(self.lifts[rep_stats[rep]['movement']]['name'], QtCore.Qt.MatchFixedString))
+            # Create rows for displaying metrics
             self.tableSetStats.setCellWidget(0, r, cb)
             self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
             self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
@@ -459,7 +466,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # analyze.post_process_video(video_file, n_frames, set_data)
 
         # Compute stats for each rep and update set stats with number of reps
-        set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats, exercise)
+        set_stats, rep_stats = analyze.analyze_reps(set_data, set_stats, self.lifts)
         set_stats['rep_stats'] = rep_stats
 
         # Update the database
