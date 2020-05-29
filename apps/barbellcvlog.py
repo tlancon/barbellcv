@@ -225,15 +225,18 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableSetStats.setItem(7, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
 
             # Update table colors
-            comparator = rep_stats[rep][self.lifts[rep_stats[rep]['lift']]['pf_metric']]
-            condition = self.lifts[rep_stats[rep]['lift']]['pf_criterion']
-            pass_rep = eval(f"{comparator}{condition}")
-            if pass_rep is True:
-                col_color = QtGui.QColor(self.table_colors[0])
+            if rep_stats[rep]['movement'] not in ['FALSE', 'FAIL']:
+                comparator = rep_stats[rep][self.lifts[rep_stats[rep]['movement']]['pf_metric']]
+                condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
+                pass_rep = eval(f"{comparator}{condition}")
+                if pass_rep is True:
+                    col_color = QtGui.QColor(self.table_colors[0])
+                else:
+                    col_color = QtGui.QColor(self.table_colors[1])
+                for i in range(1, self.tableSetStats.rowCount()):
+                    self.tableSetStats.item(i, r).setBackground(col_color)
             else:
-                col_color = QtGui.QColor(self.table_colors[1])
-            for i in range(1, self.tableSetStats.rowCount()):
-                self.tableSetStats.item(i, r).setBackground(col_color)
+                pass
 
     def update_plots(self, set_data, rep_stats):
         """
