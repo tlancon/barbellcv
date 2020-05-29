@@ -56,7 +56,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.comboExercise.addItem(self.lifts[lift]['name'])
 
         # Set up table for display
-        table_headers = ['Avg Vel (m/s)', 'Pk Vel (m/s)', 'Pk Power (W)', 'Y at Pk (m)',
+        table_headers = ['Movement', 'Avg Vel (m/s)', 'Pk Vel (m/s)', 'Pk Power (W)', 'Y at Pk (m)',
                          'X ROM (m)', 'Y ROM (m)', 'Conc. Time (s)']
         self.tableSetStats.setRowCount(len(table_headers))
         self.tableSetStats.setVerticalHeaderLabels(table_headers)
@@ -197,13 +197,25 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableSetStats.setColumnCount(len(rep_stats.keys()))
         for r, rep in enumerate(rep_stats.keys()):
             # Update table values
-            self.tableSetStats.setItem(0, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
-            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
-            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_power']:.2f}"))
-            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_height']:.2f}"))
-            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['x_rom']:.2f}"))
-            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['y_rom']:.2f}"))
-            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
+            cb = QtWidgets.QComboBox(parent=self.tableSetStats)
+            cb.addItems(['FALSE', 'FAIL'])
+            cb.addItem(self.lifts[rep_stats[rep]['lift']]['name'])
+            movements = self.lifts[rep_stats[rep]['lift']]['movements']
+            if movements == "all":
+                cb.addItems([self.lifts[moves]['name'] for moves in self.lifts.keys()])
+            elif movements == "none":
+                pass
+            else:
+                cb.addItems(movements)
+            cb.setCurrentIndex(2)
+            self.tableSetStats.setCellWidget(0, r, cb)
+            self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
+            self.tableSetStats.setItem(2, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_velocity']:.2f}"))
+            self.tableSetStats.setItem(3, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_power']:.2f}"))
+            self.tableSetStats.setItem(4, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['peak_height']:.2f}"))
+            self.tableSetStats.setItem(5, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['x_rom']:.2f}"))
+            self.tableSetStats.setItem(6, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['y_rom']:.2f}"))
+            self.tableSetStats.setItem(7, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
 
             # Update table colors
             comparator = rep_stats[rep][self.lifts[rep_stats[rep]['lift']]['pf_metric']]
@@ -213,7 +225,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 col_color = QtGui.QColor(self.table_colors[0])
             else:
                 col_color = QtGui.QColor(self.table_colors[1])
-            for i in range(self.tableSetStats.rowCount()):
+            for i in range(1, self.tableSetStats.rowCount()):
                 self.tableSetStats.item(i, r).setBackground(col_color)
 
     def update_plots(self, set_data, rep_stats):
@@ -224,7 +236,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         ----------
         set_data : DataFrame
             Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
-         rep_stats : Dictionary
+        rep_stats : Dictionary
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
         """
