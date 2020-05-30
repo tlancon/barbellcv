@@ -180,7 +180,7 @@ def analyze_reps(set_data, set_stats, lifts):
         rep_stats[f"rep{rep}"] = {}
         rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
         rep_stats[f"rep{rep}"]['set_id'] = set_stats['set_id']
-        rep_stats[f"rep{rep}"]['lift'] = lifts[set_stats['lift']]['name']
+        rep_stats[f"rep{rep}"]['lift'] = set_stats['lift']
         rep_stats[f"rep{rep}"]['average_velocity'] = float(np.average(velocity[idx]))
         rep_stats[f"rep{rep}"]['peak_velocity'] = float(np.max(velocity[idx]))
         rep_stats[f"rep{rep}"]['peak_power'] = float(set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity'])
@@ -188,7 +188,7 @@ def analyze_reps(set_data, set_stats, lifts):
         rep_stats[f"rep{rep}"]['x_rom'] = float(np.max(xcal[idx]) - np.min(xcal[idx]))
         rep_stats[f"rep{rep}"]['y_rom'] = float(np.max(ycal[idx]) - np.min(ycal[idx]))
         rep_stats[f"rep{rep}"]['t_concentric'] = float(set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0])
-        rep_stats[f"rep{rep}"]['movement'] = lifts[set_stats['lift']]['name']
+        rep_stats[f"rep{rep}"]['movement'] = set_stats['lift']
 
     return set_stats, rep_stats
 

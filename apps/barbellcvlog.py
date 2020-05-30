@@ -184,19 +184,23 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spinMinValue.setValue(0)
         self.spinMaxValue.setValue(255)
 
-    def update_table(self, rep_stats):
+    def update_table(self, set_data, rep_stats):
         """
         Clear the table and update it with stats from the current set.
 
         Parameters
         ----------
+        set_data : DataFrame
+            Data from the analyzed log. Really only here because it's needed in the Movement combo boxes to pass through
+            to self.edit_rep.
         rep_stats : Dictionary
             Dictionary containing metadata from the current set, including all of the measures to be viewed in the
             table.
         """
         self.tableSetStats.setColumnCount(len(rep_stats.keys()))
+        # Update table
         for r, rep in enumerate(rep_stats.keys()):
-            # Update table
+
             # Add a combo box that allows the user to select whether they failed the rep, it was a false detection,
             # or reclassify the rep as a different movement
             cb = QtWidgets.QComboBox(parent=self.tableSetStats)
@@ -209,11 +213,20 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 pass
             else:
                 cb.addItems(movements)
+
+            # Connect the signal to refresh the table and replace DB values when reps are edited
+            cb.activated.connect(lambda: self.edit_rep(set_data, rep_stats))
+
             # Make the default currently selected text equal to the name of the lift from lifts.json based on the
             # selected movement in the rep_stats dict
-            # This is a nasty piece of code, but for this to update correctly when reps are relabeled, you can't just
-            # use setCurrentIndex(2)
-            cb.setCurrentIndex(cb.findText(self.lifts[rep_stats[rep]['movement']]['name'], QtCore.Qt.MatchFixedString))
+            if rep_stats[rep]['movement'] == 'false':
+                cb.setCurrentIndex(0)
+            elif rep_stats[rep]['movement'] == 'fail':
+                cb.setCurrentIndex(1)
+            else:
+                cb.setCurrentIndex(cb.findText(self.lifts[rep_stats[rep]['movement']]['name'],
+                                               QtCore.Qt.MatchFixedString))
+
             # Create rows for displaying metrics
             self.tableSetStats.setCellWidget(0, r, cb)
             self.tableSetStats.setItem(1, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['average_velocity']:.2f}"))
@@ -225,7 +238,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableSetStats.setItem(7, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
 
             # Update table colors
-            if rep_stats[rep]['movement'] not in ['FALSE', 'FAIL']:
+            if rep_stats[rep]['movement'] not in ['false', 'fail']:
                 comparator = rep_stats[rep][self.lifts[rep_stats[rep]['movement']]['pf_metric']]
                 condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
                 pass_rep = eval(f"{comparator}{condition}")
@@ -266,24 +279,44 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if n_reps != 0:
             for r in range(1, n_reps + 1):
                 rep = f"rep{r}"
-                idx = tuple([reps_labeled == r])
-                t_l = set_data['Time'].values[idx][0]
-                t_r = set_data['Time'].values[idx][-1]
-                comparator = rep_stats[rep][self.lifts[rep_stats[rep]['lift']]['pf_metric']]
-                condition = self.lifts[rep_stats[rep]['lift']]['pf_criterion']
-                pass_rep = eval(f"{comparator}{condition}")
-                if pass_rep is True:
-                    rep_color = '#76B041'
-                else:
-                    rep_color = '#E4572E'
-                lri_brush = pg.mkBrush(color=rep_color)
-                lri_pen = pg.mkPen(color=rep_color)
-                lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
-                lri.setOpacity(0.3)
-                ti = pg.TextItem(text=f"{r}", color='#FFC914', anchor=(0.5, 0.5))
-                ti.setPos((t_r + t_l) / 2, 0.9)
-                self.t1.addItem(lri)
-                self.t1.addItem(ti)
+                if rep_stats[rep]['movement'] not in ['false', 'fail']:
+                    idx = tuple([reps_labeled == r])
+                    t_l = set_data['Time'].values[idx][0]
+                    t_r = set_data['Time'].values[idx][-1]
+                    comparator = rep_stats[rep][self.lifts[rep_stats[rep]['movement']]['pf_metric']]
+                    condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
+                    pass_rep = eval(f"{comparator}{condition}")
+                    if pass_rep is True:
+                        rep_color = '#76B041'
+                    else:
+                        rep_color = '#E4572E'
+                    lri_brush = pg.mkBrush(color=rep_color)
+                    lri_pen = pg.mkPen(color=rep_color)
+                    lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
+                    lri.setOpacity(0.3)
+                    ti = pg.TextItem(text=f"{self.lifts[rep_stats[rep]['movement']]['name']}", color='#FFC914', anchor=(0.5, 0.5))
+                    ti.setPos((t_r + t_l) / 2, 0.9)
+                    self.t1.addItem(lri)
+                    self.t1.addItem(ti)
+
+    def edit_rep(self, set_data, rep_stats):
+        """
+        Adjusts rep metadata based on edits made in the table, then refreshes the table and updates the database
+        accordingly.
+
+        Parameters
+        ----------
+        set_data : DataFrame
+            Data from the analyzed log. Must have columns for Time, X_m, Y_m, Velocity, and Reps.
+        rep_stats : Dictionary
+             Dictionary containing metadata from the current set.
+        """
+        cb = self.sender()
+        ix = self.tableSetStats.indexAt(cb.pos())
+        rep_stats[f"rep{ix.column()+1}"]['movement'] = cb.currentText().lower().replace(' ', '')
+        self.update_table(set_data, rep_stats)
+        self.update_plots(set_data, rep_stats)
+        database.update_rep_history(DB_PATH, rep_stats)
 
     def update_timeline_view(self):
         """
@@ -389,7 +422,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                      # 'raw_video_file': video_file,
                      # 'log_file': log_file,
                      'lifter': self.lineEditLifter.text(),
-                     'lift': self.comboExercise.currentText(),
+                     'lift': self.comboExercise.currentText().lower().replace(' ', ''),
                      'weight': self.spinKgs.value(),
                      'nominal_diameter': self.spinDiameter.value(),
                      'pixel_calibration': -1.0}
@@ -477,7 +510,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         database.update_rep_history(DB_PATH, rep_stats)
 
         # Update the table and plots
-        self.update_table(rep_stats)
+        self.update_table(set_data, rep_stats)
         self.update_plots(set_data, rep_stats)
 
         # Adjust UI back
