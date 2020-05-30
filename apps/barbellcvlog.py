@@ -139,6 +139,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         settings_file = open('./resources/settings.json', 'w')
         json.dump(settings, settings_file, indent=4)
         settings_file.close()
+        self.statusbar.clearMessage()
+        self.statusbar.showMessage('Settings saved.', 5000)
 
     # Methods for adapting UI
 
