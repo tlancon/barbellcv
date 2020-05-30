@@ -1,5 +1,4 @@
-# barbellcv
-|||--- Barbell Computer Vision ---|||
+# |||---barbell-cv---|||
 
 Get started with velocity-based training with nothing but a laptop, a webcam,
 and a high contrast marker on your barbell.
