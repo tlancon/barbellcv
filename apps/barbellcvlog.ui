@@ -286,7 +286,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="3" rowspan="4">
+      <item row="7" column="3" rowspan="3">
        <widget class="QPushButton" name="buttonLogSet">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -304,6 +304,13 @@
         </property>
         <property name="text">
          <string>Log Set</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="3">
+       <widget class="QCheckBox" name="checkSaveVideo">
+        <property name="text">
+         <string>Save video</string>
         </property>
        </widget>
       </item>
@@ -327,6 +334,12 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <action name="actionOptions">
    <property name="text">
@@ -341,6 +354,16 @@
   <action name="menuCamera">
    <property name="text">
     <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionSave_settings">
+   <property name="text">
+    <string>Save settings</string>
+   </property>
+  </action>
+  <action name="actionClear_saved_videos">
+   <property name="text">
+    <string>Clear saved videos</string>
    </property>
   </action>
  </widget>

@@ -124,8 +124,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.spinMaxValue.setValue(settings['colors']['max_value'])
             self.spinDiameter.setValue(settings['diameter'])
             self.lineEditLifter.setText(settings['lifter'])
+            self.checkSaveVideo.setChecked(settings['save_video'])
         except KeyError:
-            print('Some settings not found in settings.json. Initializing with defaults instead.')
+            self.statusbar.clearMessage()
+            self.statusbar.showMessage('Error in settings.json. Loading defaults instead.')
 
     def save_settings(self):
         """
@@ -141,7 +143,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                         'min_value': self.spinMinValue.value(),
                         'max_value': self.spinMaxValue.value(),
                     }, 'diameter': self.spinDiameter.value(),
-                    'lifter': self.lineEditLifter.text()
+                    'lifter': self.lineEditLifter.text(),
+                    'save_video': self.checkSaveVideo.isChecked()
                     }
         settings_file = open('./resources/settings.json', 'w')
         json.dump(settings, settings_file, indent=4)
@@ -427,7 +430,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Prepare set metadata
         set_id = time.strftime('%y%m%d-%H%M%S')
         exercise = self.comboExercise.currentText().lower().replace(' ', '')
-        video_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.mp4")
+        if self.checkSaveVideo.isChecked():
+            video_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.mp4")
+        else:
+            video_file = "Video not saved"
         log_file = os.path.join(DATA_DIR, f"{set_id}_{exercise}.csv")
         set_stats = {'set_id': set_id,
                      # 'raw_video_file': video_file,
@@ -455,7 +461,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             width = int(cap.get(4))
             height = int(cap.get(3))
-        video_out = cv2.VideoWriter(video_file, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
+        if self.checkSaveVideo.isChecked():
+            video_out = cv2.VideoWriter(video_file, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
         start_time = time.time()
         while True:
             _, frame = cap.read()
@@ -475,13 +482,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 path_y = np.append(path_y, y)
                 path_radii = np.append(path_radii, radius)
             cv2.imshow('Tracking barbell...', frame)
-            video_out.write(frame)
+            if self.checkSaveVideo.isChecked():
+                video_out.write(frame)
             n_frames += 1
             key = cv2.waitKey(1) & 0xFF
             if key == 27:
                 self.tracking = False
                 cap.release()
-                video_out.release()
+                if self.checkSaveVideo.isChecked():
+                    video_out.release()
                 cv2.destroyAllWindows()
                 self.buttonLogSet.setText('Log Set')
                 self.buttonPreview.setEnabled(True)
@@ -494,7 +503,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Release hold on camera and write video
         cap.release()
-        video_out.release()
+        if self.checkSaveVideo.isChecked():
+            video_out.release()
         cv2.destroyAllWindows()
         self.buttonLogSet.setText('Log Set')
         self.buttonPreview.setEnabled(True)
