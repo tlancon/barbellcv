@@ -68,7 +68,7 @@
   "hangsnatch": {
     "name": "Hang Snatch",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.0",
+    "pf_criterion": ">=1.8",
     "movements": ["Hang Power Snatch", "Overhead Squat"]
   },
   "inclinebenchpress": {
@@ -122,13 +122,13 @@
   "snatch": {
     "name": "Snatch",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.0",
+    "pf_criterion": ">=1.8",
     "movements": ["Overhead Squat"]
   },
   "snatchbalance": {
     "name": "Snatch Balance",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.0",
+    "pf_criterion": ">=1.8",
     "movements": ["Overhead Squat"]
   },
   "snatchpull": {
@@ -140,13 +140,13 @@
   "tallsnatch": {
     "name": "Tall Snatch",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.0",
+    "pf_criterion": ">=1.8",
     "movements": ["Hang Snatch", "Overhead Squat"]
   },
-  "test": {
-    "name": "TEST",
+  "readiness": {
+    "name": "Readiness",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.0",
-    "movements": ["Test1", "Test2"]
+    "pf_criterion": ">=1.8",
+    "movements": "all"
   }
 }
