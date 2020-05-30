@@ -216,7 +216,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             # Add a combo box that allows the user to select whether they failed the rep, it was a false detection,
             # or reclassify the rep as a different movement
             cb = QtWidgets.QComboBox(parent=self.tableSetStats)
-            cb.addItems(['FALSE', 'FAIL'])
+            cb.addItems(['FALSE', 'PARTIAL', 'FAIL'])
             cb.addItem(self.lifts[rep_stats[rep]['lift']]['name'])
             movements = self.lifts[rep_stats[rep]['lift']]['movements']
             if movements == "all":
@@ -233,8 +233,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             # selected movement in the rep_stats dict
             if rep_stats[rep]['movement'] == 'false':
                 cb.setCurrentIndex(0)
-            elif rep_stats[rep]['movement'] == 'fail':
+            elif rep_stats[rep]['movement'] == 'partial':
                 cb.setCurrentIndex(1)
+            elif rep_stats[rep]['movement'] == 'fail':
+                cb.setCurrentIndex(2)
             else:
                 cb.setCurrentIndex(cb.findText(self.lifts[rep_stats[rep]['movement']]['name'],
                                                QtCore.Qt.MatchFixedString))
@@ -250,7 +252,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableSetStats.setItem(7, r, QtWidgets.QTableWidgetItem(f"{rep_stats[rep]['t_concentric']:.2f}"))
 
             # Update table colors
-            if rep_stats[rep]['movement'] not in ['false', 'fail']:
+            if rep_stats[rep]['movement'] not in ['false', 'partial', 'fail']:
                 comparator = rep_stats[rep][self.lifts[rep_stats[rep]['movement']]['pf_metric']]
                 condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
                 pass_rep = eval(f"{comparator}{condition}")
@@ -291,7 +293,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if n_reps != 0:
             for r in range(1, n_reps + 1):
                 rep = f"rep{r}"
-                if rep_stats[rep]['movement'] not in ['false', 'fail']:
+                if rep_stats[rep]['movement'] not in ['false', 'partial', 'fail']:
                     idx = tuple([reps_labeled == r])
                     t_l = set_data['Time'].values[idx][0]
                     t_r = set_data['Time'].values[idx][-1]
