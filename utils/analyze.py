@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import pandas as pd
 from scipy.signal import medfilt
+from scipy.ndimage import label
 from scipy.ndimage.filters import maximum_filter1d, minimum_filter1d
 
 
@@ -96,8 +97,11 @@ def analyze_set(t, x, y, r, diameter):
 
     Returns
     -------
-    DataFrame
-        A new DataFrame with updated information for more advanced analytics.
+    List
+        Index 0: DataFrame
+            A new DataFrame with updated information for more advanced analytics.
+        Index 1: Float
+            Pixel calibration factor used to convert pixels to meters.
     """
 
     # Need to zero out bullshit numbers like 3.434236345E-120 or some shit
@@ -140,7 +144,53 @@ def analyze_set(t, x, y, r, diameter):
     set_analyzed['Velocity'] = velocity
     set_analyzed['Reps'] = reps_binary
 
-    return set_analyzed
+    return set_analyzed, calibration
+
+
+def analyze_reps(set_data, set_stats, lifts):
+    """
+    Given an analyzed set log, calculate metrics for each rep that is found for updating the table and plots.
+
+    Any NumPy results are cast to float32 so they map properly to the real data type in SQLite. See here why this
+    tedious method is used: https://github.com/numpy/numpy/issues/6860
+
+    Parameters
+    ----------
+    set_data : DataFrame
+        Data collected and analyzed from logging the set. Expected columns are Time, Velocity, X_m, Y_m, and Reps.
+    set_stats : Dictionary
+        Metadata for the set. The only expected keys is weight, but number_of_reps is added and returned.
+    lifts : Dictionary
+        Library of lifts from lifts.json.
+
+    Returns
+    -------
+    list of dictionaries
+        Index 0: set_stats dictionary updated with number of reps
+        Index 1: rep_stats dictionary with metrics measured for each rep
+    """
+    reps_labeled, n_reps = label(set_data['Reps'].values)
+    set_stats['number_of_reps'] = n_reps
+    velocity = set_data['Velocity'].values
+    xcal = set_data['X_m'].values
+    ycal = set_data['Y_m'].values
+    rep_stats = {}
+    for rep in range(1, n_reps + 1):
+        idx = tuple([reps_labeled == rep])
+        rep_stats[f"rep{rep}"] = {}
+        rep_stats[f"rep{rep}"]['rep_id'] = f"{set_stats['set_id']}_{rep}"
+        rep_stats[f"rep{rep}"]['set_id'] = set_stats['set_id']
+        rep_stats[f"rep{rep}"]['lift'] = set_stats['lift']
+        rep_stats[f"rep{rep}"]['average_velocity'] = float(np.average(velocity[idx]))
+        rep_stats[f"rep{rep}"]['peak_velocity'] = float(np.max(velocity[idx]))
+        rep_stats[f"rep{rep}"]['peak_power'] = float(set_stats['weight'] * 9.80665 * rep_stats[f"rep{rep}"]['peak_velocity'])
+        rep_stats[f"rep{rep}"]['peak_height'] = float(ycal[idx][np.argmax(velocity[idx])])
+        rep_stats[f"rep{rep}"]['x_rom'] = float(np.max(xcal[idx]) - np.min(xcal[idx]))
+        rep_stats[f"rep{rep}"]['y_rom'] = float(np.max(ycal[idx]) - np.min(ycal[idx]))
+        rep_stats[f"rep{rep}"]['t_concentric'] = float(set_data['Time'].values[idx][-1] - set_data['Time'].values[idx][0])
+        rep_stats[f"rep{rep}"]['movement'] = set_stats['lift']
+
+    return set_stats, rep_stats
 
 
 def post_process_video(video_file, n_frames, set_data):
