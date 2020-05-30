@@ -16,6 +16,13 @@ DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
 DB_PATH = os.path.abspath('./data/history.db')
 DB_BACKUP_PATH = os.path.abspath('./data/history_backup.db')
 
+COLOR_SCHEME = {'darkblue': '#19232D',
+                'orange': '#E4572E',
+                'lightblue': '#17BEEB',
+                'yellow': '#FFC914',
+                'green': '#76B041',
+                'white': '#FFFFFF'}
+
 qtCreatorFile = os.path.abspath('./apps/barbellcvlog.ui')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
@@ -68,7 +75,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.plotTimeline.clear()
         self.t1 = self.plotTimeline.plotItem
         self.t1.setLabel('bottom', 'Time (s)', **{'color': '#FFFFFF'})
-        self.t1.setLabel('left', 'Y (m)', **{'color': '#E4572E'})
+        self.t1.setLabel('left', 'Y (m)', **{'color': '#FFC914'})
         self.t1.setLabel('right', 'Velocity (m/s)', **{'color': '#17BEEB'})
         # Link X axis but keep y separate for y, velocity
         self.t2 = pg.ViewBox()
@@ -81,8 +88,8 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Create empty plot for barbell motion path
         self.plotMotion.clear()
         self.xy = self.plotMotion.plotItem
-        self.xy.setLabel('bottom', 'X (m)', **{'color': '#76B041'})
-        self.xy.setLabel('left', 'Y (m)', **{'color': '#76B041'})
+        self.xy.setLabel('bottom', 'X (m)', **{'color': '#FFFFFF'})
+        self.xy.setLabel('left', 'Y (m)', **{'color': '#FFFFFF'})
         self.xy.setAspectLocked(lock=True, ratio=1)
 
         # Logic controls for button clicks
@@ -267,13 +274,13 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         # Update plots
         self.t2.clear()
-        y_pen = pg.mkPen(color='#E4572E', width=1.5)
+        y_pen = pg.mkPen(color='#FFC914', width=1.5)
         v_pen = pg.mkPen(color='#17BEEB', width=1.5)
         self.t1.plot(set_data['Time'].values, set_data['Y_m'].values, pen=y_pen, clear=True)
         self.t2.addItem(
             pg.PlotCurveItem(set_data['Time'].values, set_data['Velocity'].values, pen=v_pen, clear=True))
 
-        m_pen = pg.mkPen(color='#76B041', width=1.5)
+        m_pen = pg.mkPen(color='#FFFFFF', width=1.5)
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
         # Update rep highlighting
@@ -296,8 +303,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     lri_pen = pg.mkPen(color=rep_color)
                     lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
                     lri.setOpacity(0.3)
-                    ti = pg.TextItem(text=f"{self.lifts[rep_stats[rep]['movement']]['name']}", color='#FFC914', anchor=(0.5, 0.5))
-                    ti.setPos((t_r + t_l) / 2, 0.9)
+                    rep_lri_label = self.lifts[rep_stats[rep]['movement']]['name']
+                    ti = pg.TextItem(text=rep_lri_label, color='#FFFFFF', anchor=(0.5, 0.5))
+                    rep_lri_pos = self.t1.getAxis('left').range[1] * 0.9
+                    ti.setPos((t_r + t_l) / 2, rep_lri_pos)
                     self.t1.addItem(lri)
                     self.t1.addItem(ti)
 
