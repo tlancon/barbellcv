@@ -15,7 +15,7 @@ and a high contrast marker on your barbell.
    ```
 4. Run the program:
     ```
-    python barbellcv.py
+    python main.py
     ```
 5. Preview your webcam using the "Preview" button, and rotate it if needed using the adjacent dropdown.
 Press Enter to escape the preview.
@@ -29,7 +29,7 @@ Press Enter to escape the preview.
 8. Input the weight for the set in lbs or kgs (they are synchronized so they will always equal each other)
 9. Press "Log Set" and wait for the webcam preview to show before lifting
 10. After lifting, press the Enter key to complete the set
-11. In a few seconds, the results for the set will be shown
+11. The results for the set are shown!
 
 ![Output from example set.](docs/test_reps_annotated.png)
 
