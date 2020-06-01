@@ -24,6 +24,7 @@ COLOR_SCHEME = {'darkblue': '#19232D',
                 'white': '#FFFFFF'}
 
 qtCreatorFile = os.path.abspath('./apps/barbellcvlog.ui')
+iconFile = os.path.abspath('./apps/barbellcvicon.ico')
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 
@@ -32,6 +33,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+        self.setWindowIcon(QtGui.QIcon(iconFile))
 
         # Connect signals
         self.buttonPreview.clicked.connect(self.preview_camera)
