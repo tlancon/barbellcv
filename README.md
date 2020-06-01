@@ -11,7 +11,7 @@ and a high contrast marker on your barbell.
 2. Go to that directory using CMD (Windows) or the terminal (Mac/Linux)
 3. Make sure the correct dependencies are installed using pip:
     ```
-    python -m pip install requirements.txt
+    python -m pip install -r requirements.txt
    ```
 4. Run the program:
     ```
