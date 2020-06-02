@@ -2,6 +2,7 @@ data/
 resources/settings.json
 test_sample.py
 apps/barbellcvicon.xcf
+apps/barbellcvcolors.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
