@@ -1,12 +1,6 @@
 data/
 resources/settings.json
 test_sample.py
-apps/barbellcvicon.xcf
-apps/barbellcvcolors.png
-apps/splashanimation.gif
-apps/splashanimation.pptx
-apps/barbellcvsplash.py
-apps/barbellcvsplash.ui
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -39,9 +39,10 @@ else:
 if os.path.isdir(f"./data/{time.strftime('%y%m%d')}") is False:
     os.mkdir(f"./data/{time.strftime('%y%m%d')}")
 
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    log_app = QApplication(sys.argv)
     window = barbellcvlog.BarbellCVLogApp()
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    log_app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(log_app.exec_())
