@@ -10,6 +10,7 @@ import pyqtgraph as pg
 from scipy.ndimage import label
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 # Custom imports
+from . import splashscreen
 from utils import analyze, webcam, database
 
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
@@ -34,6 +35,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.setWindowIcon(QtGui.QIcon(iconFile))
+
+        # Call splash window to display logo while app loads
+        self.splash_screen = splashscreen.SplashWindow()
 
         # Connect signals
         self.buttonPreview.clicked.connect(self.preview_camera)
