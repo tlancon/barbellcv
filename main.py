@@ -9,7 +9,7 @@ import pyqtgraph as pg
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 # Custom imports
-from apps import barbellcvlog
+from apps import barbellcvlog, splashscreen
 from utils import database
 
 # Need to scale to screen resolution - this handles 4k scaling
