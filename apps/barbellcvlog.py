@@ -478,11 +478,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
             masked = analyze.apply_mask(frame, lower, upper, self.smoothing_kernel)
             contours, _ = cv2.findContours(masked, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            # Only track points if a contour is found
-            if len(contours) != 0:
-                largest = max(contours, key=cv2.contourArea)
-                (x, y), radius = cv2.minEnclosingCircle(largest)
+            largest = max(contours, key=cv2.contourArea)
+            (x, y), radius = cv2.minEnclosingCircle(largest)
+            if len(contours) != 0 and radius > 3:
                 cv2.circle(frame, (int(x), int(y)), int(radius), (255, 255, 255), -1)
                 path_time = np.append(path_time, (time.time() - start_time))
                 path_x = np.append(path_x, x)
