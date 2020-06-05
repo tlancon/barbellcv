@@ -106,7 +106,6 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Globals that need sharing throughout the apps
         self.mask_colors = deque()
-        self.table_colors = ['#76B041', '#E4572E']  # [Good rep, bad rep]
         self.smoothing_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
 
     # Methods for initializing UI
@@ -263,9 +262,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
                 pass_rep = eval(f"{comparator}{condition}")
                 if pass_rep is True:
-                    col_color = QtGui.QColor(self.table_colors[0])
+                    col_color = QtGui.QColor(COLOR_SCHEME['green'])
                 else:
-                    col_color = QtGui.QColor(self.table_colors[1])
+                    col_color = QtGui.QColor(COLOR_SCHEME['orange'])
                 for i in range(1, self.tableSetStats.rowCount()):
                     self.tableSetStats.item(i, r).setBackground(col_color)
             else:
@@ -307,9 +306,9 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     condition = self.lifts[rep_stats[rep]['movement']]['pf_criterion']
                     pass_rep = eval(f"{comparator}{condition}")
                     if pass_rep is True:
-                        rep_color = '#76B041'
+                        rep_color = COLOR_SCHEME['green']
                     else:
-                        rep_color = '#E4572E'
+                        rep_color = COLOR_SCHEME['orange']
                     lri_brush = pg.mkBrush(color=rep_color)
                     lri_pen = pg.mkPen(color=rep_color)
                     lri = pg.LinearRegionItem((t_l, t_r), brush=lri_brush, pen=lri_pen, movable=False)
