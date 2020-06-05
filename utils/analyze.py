@@ -2,7 +2,6 @@ import time
 import cv2
 import numpy as np
 import pandas as pd
-from scipy.signal import medfilt
 from scipy.ndimage import label
 from scipy.ndimage.filters import maximum_filter1d, minimum_filter1d
 
