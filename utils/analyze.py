@@ -78,6 +78,51 @@ def find_reps(y, threshold, open_size, close_size):
     return rep_signal
 
 
+def reject_outliers(arr, window_size, threshold):
+    """
+    Given a 1D signal, replace outliers with the average of the surrounding points.
+
+    Does the following for every point:
+        1. Computes the median of the sliding window
+        2. Computes the percentage difference between the current point and the
+           sliding window median
+        3. If that deviation exceeds the given threshold, replaces that point with
+           the average of the surrounding two points.
+        4. Otherwise, returns the same point.
+
+    Parameters
+    ----------
+    arr : 1D array
+        Signal with outliers
+    window_size : int
+        Size of sliding window
+    threshold : float
+        Minimum acceptable percentage deviation (as decimal)
+
+    Returns
+    -------
+    result : 1D array
+        Original signal with outliers removed.
+    """
+    if len(arr.shape) > 1:
+        print('Only 1D arrays supported.')
+        return
+
+    result = np.empty_like(arr)
+
+    for i in range(0, arr.shape[0]):
+        min_i = int(max(0, np.floor(i - window_size / 2)))
+        max_i = int(min(arr.shape[0], np.floor(i + window_size / 2 + 1)))
+        med = np.median(arr[min_i:max_i])
+        dev = np.abs(arr[i] - med) / med
+        if dev > threshold:
+            result[i] = np.average([arr[i - 1], arr[i + 1]])
+        else:
+            result[i] = arr[i]
+
+    return result
+
+
 def analyze_set(t, x, y, r, diameter):
     """
     Calculates statistics of a set from barbell tracking arrays.
@@ -118,8 +163,8 @@ def analyze_set(t, x, y, r, diameter):
     calibration = nominal_radius / np.median(r[5:20])
 
     # Smooth motion to remove outliers
-    xsmooth = medfilt(x, 7)
-    ysmooth = medfilt(y, 7)
+    xsmooth = reject_outliers(x, 3, 0.3)
+    ysmooth = reject_outliers(y, 3, 0.3)
 
     # Calibrate x and y movement
     xcal = (xsmooth - np.min(xsmooth)) * calibration  # meters
