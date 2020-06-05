@@ -478,14 +478,17 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
             upper = np.array([self.spinMaxHue.value(), self.spinMaxSaturation.value(), self.spinMaxValue.value()])
             masked = analyze.apply_mask(frame, lower, upper, self.smoothing_kernel)
             contours, _ = cv2.findContours(masked, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            largest = max(contours, key=cv2.contourArea)
-            (x, y), radius = cv2.minEnclosingCircle(largest)
-            if len(contours) != 0 and radius > 3:
-                cv2.circle(frame, (int(x), int(y)), int(radius), (255, 255, 255), -1)
-                path_time = np.append(path_time, (time.time() - start_time))
-                path_x = np.append(path_x, x)
-                path_y = np.append(path_y, y)
-                path_radii = np.append(path_radii, radius)
+            if len(contours) != 0:
+                largest = max(contours, key=cv2.contourArea)
+                (x, y), radius = cv2.minEnclosingCircle(largest)
+                if radius > 5:  # Reject small circles so noise can't warp bar path
+                    cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 0), -1)
+                    path_time = np.append(path_time, (time.time() - start_time))
+                    path_x = np.append(path_x, x)
+                    path_y = np.append(path_y, y)
+                    path_radii = np.append(path_radii, radius)
+                else:
+                    cv2.circle(frame, (int(x), int(y)), int(radius), (0, 0, 255), -1)
             cv2.imshow('Tracking barbell...', frame)
             if self.checkSaveVideo.isChecked():
                 video_out.write(frame)
