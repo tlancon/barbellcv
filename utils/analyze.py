@@ -80,7 +80,7 @@ def find_reps(y, threshold, open_size, close_size):
 
 def analyze_set(t, x, y, r, diameter):
     """
-    Calculates statistics of a set from a video recording and barbell tracking arrays.
+    Calculates statistics of a set from barbell tracking arrays.
 
     Parameters
     ----------
