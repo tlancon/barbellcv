@@ -107,6 +107,12 @@
     "pf_criterion": ">=1.9",
     "movements": ["Clean", "Front Squat"]
   },
+  "powerjerk": {
+    "name": "Power Jerk",
+    "pf_metric": "peak_velocity",
+    "pf_criterion": ">=1.9",
+    "movements": ["Overhead Squat"]
+  },
   "powersnatch": {
     "name": "Power Snatch",
     "pf_metric": "peak_velocity",
@@ -117,7 +123,7 @@
     "name": "Push Press",
     "pf_metric": "t_concentric",
     "pf_criterion": "<=1.0",
-    "movements": ["Stand"]
+    "movements": "none"
   },
   "snatch": {
     "name": "Snatch",
