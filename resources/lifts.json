@@ -14,13 +14,13 @@
   "clean": {
     "name": "Clean",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.7",
+    "pf_criterion": ">=1.4",
     "movements": ["Front Squat"]
   },
   "cleanandjerk": {
     "name": "Clean and Jerk",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.8",
+    "pf_criterion": ">=1.4",
     "movements": ["Clean", "Front Squat", "Jerk"]
   },
   "cleanpull": {
@@ -50,19 +50,19 @@
   "hangclean": {
     "name": "Hang Clean",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.7",
+    "pf_criterion": ">=1.4",
     "movements": ["Hang Power Clean", "Front Squat"]
   },
   "hangpowerclean": {
     "name": "Hang Power Clean",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.9",
+    "pf_criterion": ">=1.4",
     "movements": ["Hang Clean", "Front Squat"]
   },
   "hangpowersnatch": {
     "name": "Hang Power Snatch",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.2",
+    "pf_criterion": ">=1.8",
     "movements": ["Hang Snatch", "Overhead Squat"]
   },
   "hangsnatch": {
@@ -80,7 +80,7 @@
   "jerk": {
     "name": "Jerk",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.8",
+    "pf_criterion": ">=2.0",
     "movements": ["Stand"]
   },
   "musclesnatch": {
@@ -104,19 +104,19 @@
   "powerclean": {
     "name": "Power Clean",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.9",
+    "pf_criterion": ">=1.4",
     "movements": ["Clean", "Front Squat"]
   },
   "powerjerk": {
     "name": "Power Jerk",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=1.9",
+    "pf_criterion": ">=2.0",
     "movements": ["Overhead Squat"]
   },
   "powersnatch": {
     "name": "Power Snatch",
     "pf_metric": "peak_velocity",
-    "pf_criterion": ">=2.2",
+    "pf_criterion": ">=1.8",
     "movements": ["Snatch", "Overhead Squat"]
   },
   "pushpress": {
