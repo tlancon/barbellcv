@@ -163,14 +163,14 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Adapts kgs spinbox to a change in lbs.
         """
-        kgs = round(self.spinLbs.value() * 0.453592, 0)
+        kgs = round(self.spinLbs.value() * 0.453592, 1)
         self.spinKgs.setValue(kgs)
 
     def kgs_changed(self):
         """
         Adapts lbs spinbox to a change in kgs.
         """
-        lbs = round(self.spinKgs.value() * 2.20462, 0)
+        lbs = round(self.spinKgs.value() * 2.20462, 1)
         self.spinLbs.setValue(lbs)
 
     def handle_color_selection(self, event, x, y, flags, frame):
