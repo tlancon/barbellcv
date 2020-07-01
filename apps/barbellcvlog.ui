@@ -340,6 +340,7 @@
      <string>File</string>
     </property>
     <addaction name="actionExportToCSV"/>
+    <addaction name="actionRefreshCameraList"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -371,6 +372,11 @@
   <action name="actionExportToCSV">
    <property name="text">
     <string>Export database to CSV...</string>
+   </property>
+  </action>
+  <action name="actionRefreshCameraList">
+   <property name="text">
+    <string>Refresh camera list</string>
    </property>
   </action>
  </widget>

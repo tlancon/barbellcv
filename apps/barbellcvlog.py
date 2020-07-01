@@ -47,12 +47,12 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spinLbs.editingFinished.connect(self.lbs_changed)
         self.spinKgs.editingFinished.connect(self.kgs_changed)
         self.actionExportToCSV.triggered.connect(self.export_database)
+        self.actionRefreshCameraList.triggered.connect(self.refresh_cameras)
 
         # Set up camera options
         # Find available cameras
-        self.camera_list = webcam.list_available_cameras()
-        for c in self.camera_list:
-            self.comboCamera.addItem(str(c))
+        self.camera_list = []
+        self.refresh_cameras()
         # Set up rotation
         for r in ['0', '90', '180', '270']:
             self.comboRotation.addItem(r + u"\u00b0")
@@ -157,6 +157,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         settings_file.close()
         self.statusbar.clearMessage()
         self.statusbar.showMessage('Settings saved.', 5000)
+
+    def refresh_cameras(self):
+        """
+        Searches for all available cameras and updates them in the UI.
+        """
+        self.comboCamera.clear()
+        self.camera_list = webcam.list_available_cameras()
+        for c in self.camera_list:
+            self.comboCamera.addItem(str(c))
 
     # Methods for adapting UI
 
