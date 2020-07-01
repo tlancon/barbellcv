@@ -46,6 +46,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonLogSet.clicked.connect(self.log_set)
         self.spinLbs.editingFinished.connect(self.lbs_changed)
         self.spinKgs.editingFinished.connect(self.kgs_changed)
+        self.actionExportToCSV.triggered.connect(self.export_database)
 
         # Set up camera options
         # Find available cameras
@@ -345,6 +346,15 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
         self.t2.linkedViewChanged(self.t1.vb, self.t2.XAxis)
+
+    # Menu actions
+
+    def export_database(self):
+        """
+        Writes set and rep history to a single Excel file with multiple sheets. User chooses file location on disk.
+        """
+        base_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', filter='CSV (*.csv)')
+        database.export_to_csv(DB_PATH, base_path[0])
 
     # Button actions
 

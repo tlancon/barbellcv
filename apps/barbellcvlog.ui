@@ -339,6 +339,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionExportToCSV"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -365,6 +366,11 @@
   <action name="actionClear_saved_videos">
    <property name="text">
     <string>Clear saved videos</string>
+   </property>
+  </action>
+  <action name="actionExportToCSV">
+   <property name="text">
+    <string>Export database to CSV...</string>
    </property>
   </action>
  </widget>
