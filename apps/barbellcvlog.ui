@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Trevor Lancon</author>
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
@@ -375,6 +376,29 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>comboCamera</tabstop>
+  <tabstop>comboRotation</tabstop>
+  <tabstop>buttonPreview</tabstop>
+  <tabstop>spinMinHue</tabstop>
+  <tabstop>spinMaxHue</tabstop>
+  <tabstop>spinMinSaturation</tabstop>
+  <tabstop>spinMaxSaturation</tabstop>
+  <tabstop>spinMinValue</tabstop>
+  <tabstop>spinMaxValue</tabstop>
+  <tabstop>buttonSelectColor</tabstop>
+  <tabstop>spinDiameter</tabstop>
+  <tabstop>buttonSaveSettings</tabstop>
+  <tabstop>spinLbs</tabstop>
+  <tabstop>spinKgs</tabstop>
+  <tabstop>comboExercise</tabstop>
+  <tabstop>lineEditLifter</tabstop>
+  <tabstop>checkSaveVideo</tabstop>
+  <tabstop>buttonLogSet</tabstop>
+  <tabstop>lineEditLogPath</tabstop>
+  <tabstop>buttonOpenSet</tabstop>
+  <tabstop>tableSetStats</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
