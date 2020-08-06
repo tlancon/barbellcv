@@ -7,8 +7,8 @@ and a high contrast marker on your barbell.
 
 ## Quick Start
 
-1. Download this repository as a .zip file, then unzip it where you like
-2. Go to that directory using CMD (Windows) or the terminal (Mac/Linux)
+1. Download this repository as a .zip file, then unzip it where you like.
+2. Go to that directory using CMD (Windows) or the terminal (Mac/Linux.
 3. Make sure the correct dependencies are installed using pip:
     ```
     python -m pip install -r requirements.txt
