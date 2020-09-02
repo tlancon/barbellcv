@@ -300,7 +300,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.t2.addItem(
             pg.PlotCurveItem(set_data['Time'].values, set_data['Velocity'].values, pen=v_pen, clear=True))
 
-        m_pen = pg.mkPen(color='#FFFFFF', width=1.5)
+        m_pen = pg.mkPen(color='#FFFFFF', width=1)
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
         # Update rep highlighting in timeline and max velocity points in bar path
