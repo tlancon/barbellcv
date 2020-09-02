@@ -303,7 +303,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         m_pen = pg.mkPen(color='#FFFFFF', width=1.5)
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
-        # Update rep highlighting
+        # Update rep highlighting in timeline and max velocity points in bar path
         reps_labeled, n_reps = label(set_data['Reps'].values)
         if n_reps != 0:
             for r in range(1, n_reps + 1):
@@ -329,6 +329,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     ti.setPos((t_r + t_l) / 2, rep_lri_pos)
                     self.t1.addItem(lri)
                     self.t1.addItem(ti)
+                    max_y = rep_stats[rep]['peak_height']
+                    max_x = set_data['X_m'].values[idx][np.where(set_data['Y_m'].values[idx] == max_y)]
+                    self.xy.addItem(
+                        pg.ScatterPlotItem(x=[max_x], y=[max_y], symbol='o', pen=lri_pen, brush=lri_brush, size=12))
 
     def edit_rep(self, set_data, rep_stats):
         """
