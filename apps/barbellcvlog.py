@@ -10,7 +10,7 @@ import pyqtgraph as pg
 from scipy.ndimage import label
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 # Custom imports
-from . import splashscreen
+from . import splashscreen, documentation
 from utils import analyze, webcam, database
 
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
@@ -374,8 +374,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Loads and displays simple HTML documentation.
         """
-        self.statusbar.clearMessage()
-        self.statusbar.showMessage('Placeholder: docs loaded', 5000)
+        self.docs = documentation.Documentation()
 
     # Button actions
 
