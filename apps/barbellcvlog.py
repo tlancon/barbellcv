@@ -48,6 +48,7 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spinKgs.editingFinished.connect(self.kgs_changed)
         self.actionExportToCSV.triggered.connect(self.export_database)
         self.actionRefreshCameraList.triggered.connect(self.refresh_cameras)
+        self.actionDocumentation.triggered.connect(self.show_documentation)
 
         # Set up camera options
         # Find available cameras
@@ -368,6 +369,13 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         base_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', filter='CSV (*.csv)')
         database.export_to_csv(DB_PATH, base_path[0])
+
+    def show_documentation(self):
+        """
+        Loads and displays simple HTML documentation.
+        """
+        self.statusbar.clearMessage()
+        self.statusbar.showMessage('Placeholder: docs loaded', 5000)
 
     # Button actions
 

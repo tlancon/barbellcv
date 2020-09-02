@@ -342,7 +342,14 @@
     <addaction name="actionExportToCSV"/>
     <addaction name="actionRefreshCameraList"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionDocumentation"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionOptions">
    <property name="text">
@@ -377,6 +384,11 @@
   <action name="actionRefreshCameraList">
    <property name="text">
     <string>Refresh camera list</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
    </property>
   </action>
  </widget>
