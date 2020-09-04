@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>barbellcv Documentation</title>
+    <style>
+         body {
+            color: white;
+            background-color: #19232D;
+            font-family: Tahoma;
+         }
+         a:link {
+            color: #E4572E
+         }
+         a:visited {
+            color: #76B041
+         }
+      </style>
+</head>
+<body>
+
+<h1>|||---barbell-cv---|||</h1>
+
+<h2>Table of Contents</h2>
+
+<a href="requirements.html">Requirements</a><br>
+<a href="setup.html">Setup</a><br>
+<a href="logging_sets.html">Logging Sets</a><br>
+<a href="editing_sets.html">Editing Sets</a><br>
+<a href="accuracy_considerations.html">Accuracy Considerations</a><br>
+
+<h1>Quick Start</h1>
+
+<ol>
+    <li>Preview your webcam using the "Preview" button, and rotate it if needed using the adjacent dropdown.
+        Press Enter to escape the preview.</li>
+    <li>Select the color of your barbell marker interactively.</li>
+    <ul>
+        <li>Press the "Select Color" button.</li>
+        <li>Drag your mouse over the marker in the popup (make sure to move the marker around and select it under
+            varying light conditions and angles).</li>
+        <li>Press Enter when the marker is tracked satisfactorily.</li>
+    </ul>
+    <li>Select the exercise you want to do.</li>
+    <ul>
+        <li>Add exercises that you find missing to the /resources/lifts.json file.</li>
+    </ul>
+    <li>Input the weight for the set in lbs or kgs.</li>
+    <li>Press "Log Set" and wait for the webcam preview to show before lifting.</li>
+    <li>After lifting, press the Enter key to complete the set.</li>
+    <li>The results for the set are shown.</li>
+</ol>
+
+<img src = "screenshots/failure_criteria.png" alt = "Pass/fail criteria for reps." width=800 />
+
+</body>
+</html>
