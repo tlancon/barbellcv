@@ -22,6 +22,6 @@ class Documentation(QWidget):
         self.show()
 
     def load_page(self):
-        with open('./docs/simple_documentation.html', 'r') as f:
+        with open('./docs/documentation.html', 'r') as f:
             html = f.read()
             self.webEngineView.setHtml(html, baseUrl=QUrl('file:///docs/'))
