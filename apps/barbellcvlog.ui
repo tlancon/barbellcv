@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Trevor Lancon</author>
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
@@ -62,9 +63,6 @@
          <string>Exercise</string>
         </property>
        </widget>
-      </item>
-      <item row="12" column="0" colspan="3">
-       <widget class="QLineEdit" name="lineEditLogPath"/>
       </item>
       <item row="5" column="3">
        <widget class="QPushButton" name="buttonSaveSettings">
@@ -181,10 +179,10 @@
       <item row="7" column="1">
        <widget class="QDoubleSpinBox" name="spinLbs">
         <property name="decimals">
-         <number>2</number>
+         <number>1</number>
         </property>
         <property name="maximum">
-         <double>1102.309999999999945</double>
+         <double>1102.299999999999955</double>
         </property>
         <property name="value">
          <double>45.000000000000000</double>
@@ -198,16 +196,6 @@
         </property>
        </widget>
       </item>
-      <item row="12" column="3">
-       <widget class="QPushButton" name="buttonOpenSet">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Open Set</string>
-        </property>
-       </widget>
-      </item>
       <item row="8" column="2">
        <widget class="QLabel" name="labelKgs">
         <property name="text">
@@ -218,7 +206,7 @@
       <item row="8" column="1">
        <widget class="QDoubleSpinBox" name="spinKgs">
         <property name="decimals">
-         <number>2</number>
+         <number>1</number>
         </property>
         <property name="maximum">
          <double>501.000000000000000</double>
@@ -314,6 +302,13 @@
         </property>
        </widget>
       </item>
+      <item row="12" column="0" colspan="4">
+       <widget class="QLineEdit" name="lineEditLogPath">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="4" column="2" rowspan="2">
@@ -338,8 +333,17 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionExportToCSV"/>
+    <addaction name="actionRefreshCameraList"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionDocumentation"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionOptions">
    <property name="text">
@@ -366,6 +370,21 @@
     <string>Clear saved videos</string>
    </property>
   </action>
+  <action name="actionExportToCSV">
+   <property name="text">
+    <string>Export database to CSV...</string>
+   </property>
+  </action>
+  <action name="actionRefreshCameraList">
+   <property name="text">
+    <string>Refresh camera list</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -375,6 +394,28 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>comboCamera</tabstop>
+  <tabstop>comboRotation</tabstop>
+  <tabstop>buttonPreview</tabstop>
+  <tabstop>spinMinHue</tabstop>
+  <tabstop>spinMaxHue</tabstop>
+  <tabstop>spinMinSaturation</tabstop>
+  <tabstop>spinMaxSaturation</tabstop>
+  <tabstop>spinMinValue</tabstop>
+  <tabstop>spinMaxValue</tabstop>
+  <tabstop>buttonSelectColor</tabstop>
+  <tabstop>spinDiameter</tabstop>
+  <tabstop>buttonSaveSettings</tabstop>
+  <tabstop>spinLbs</tabstop>
+  <tabstop>spinKgs</tabstop>
+  <tabstop>comboExercise</tabstop>
+  <tabstop>lineEditLifter</tabstop>
+  <tabstop>checkSaveVideo</tabstop>
+  <tabstop>buttonLogSet</tabstop>
+  <tabstop>lineEditLogPath</tabstop>
+  <tabstop>tableSetStats</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

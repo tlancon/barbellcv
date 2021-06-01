@@ -10,7 +10,7 @@ import pyqtgraph as pg
 from scipy.ndimage import label
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 # Custom imports
-from . import splashscreen
+from . import splashscreen, documentation
 from utils import analyze, webcam, database
 
 DATA_DIR = os.path.dirname(f"./data/{time.strftime('%y%m%d')}/")
@@ -46,12 +46,14 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.buttonLogSet.clicked.connect(self.log_set)
         self.spinLbs.editingFinished.connect(self.lbs_changed)
         self.spinKgs.editingFinished.connect(self.kgs_changed)
+        self.actionExportToCSV.triggered.connect(self.export_database)
+        self.actionRefreshCameraList.triggered.connect(self.refresh_cameras)
+        self.actionDocumentation.triggered.connect(self.show_documentation)
 
         # Set up camera options
         # Find available cameras
-        self.camera_list = webcam.list_available_cameras()
-        for c in self.camera_list:
-            self.comboCamera.addItem(str(c))
+        self.camera_list = []
+        self.refresh_cameras()
         # Set up rotation
         for r in ['0', '90', '180', '270']:
             self.comboRotation.addItem(r + u"\u00b0")
@@ -157,20 +159,29 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.statusbar.clearMessage()
         self.statusbar.showMessage('Settings saved.', 5000)
 
+    def refresh_cameras(self):
+        """
+        Searches for all available cameras and updates them in the UI.
+        """
+        self.comboCamera.clear()
+        self.camera_list = webcam.list_available_cameras()
+        for c in self.camera_list:
+            self.comboCamera.addItem(str(c))
+
     # Methods for adapting UI
 
     def lbs_changed(self):
         """
         Adapts kgs spinbox to a change in lbs.
         """
-        kgs = round(self.spinLbs.value() * 0.453592, 0)
+        kgs = round(self.spinLbs.value() * 0.453592, 1)
         self.spinKgs.setValue(kgs)
 
     def kgs_changed(self):
         """
         Adapts lbs spinbox to a change in kgs.
         """
-        lbs = round(self.spinKgs.value() * 2.20462, 0)
+        lbs = round(self.spinKgs.value() * 2.20462, 1)
         self.spinLbs.setValue(lbs)
 
     def handle_color_selection(self, event, x, y, flags, frame):
@@ -290,10 +301,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.t2.addItem(
             pg.PlotCurveItem(set_data['Time'].values, set_data['Velocity'].values, pen=v_pen, clear=True))
 
-        m_pen = pg.mkPen(color='#FFFFFF', width=1.5)
+        m_pen = pg.mkPen(color='#FFFFFF', width=1)
         self.xy.plot(set_data['X_m'].values[20:], set_data['Y_m'].values[20:], pen=m_pen, clear=True)
 
-        # Update rep highlighting
+        # Update rep highlighting in timeline and max velocity points in bar path
         reps_labeled, n_reps = label(set_data['Reps'].values)
         if n_reps != 0:
             for r in range(1, n_reps + 1):
@@ -319,6 +330,10 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     ti.setPos((t_r + t_l) / 2, rep_lri_pos)
                     self.t1.addItem(lri)
                     self.t1.addItem(ti)
+                    max_y = rep_stats[rep]['peak_height']
+                    max_x = set_data['X_m'].values[idx][np.where(set_data['Y_m'].values[idx] == max_y)]
+                    self.xy.addItem(
+                        pg.ScatterPlotItem(x=[max_x], y=[max_y], symbol='o', pen=lri_pen, brush=lri_brush, size=12))
 
     def edit_rep(self, set_data, rep_stats):
         """
@@ -345,6 +360,21 @@ class BarbellCVLogApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.t2.setGeometry(self.t1.vb.sceneBoundingRect())
         self.t2.linkedViewChanged(self.t1.vb, self.t2.XAxis)
+
+    # Menu actions
+
+    def export_database(self):
+        """
+        Writes set and rep history to a single Excel file with multiple sheets. User chooses file location on disk.
+        """
+        base_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', filter='CSV (*.csv)')
+        database.export_to_csv(DB_PATH, base_path[0])
+
+    def show_documentation(self):
+        """
+        Loads and displays simple HTML documentation.
+        """
+        self.docs = documentation.Documentation()
 
     # Button actions
 

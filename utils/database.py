@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 
 def connect_db(db_path):
@@ -95,3 +96,21 @@ def update_rep_history(db_path, rep_stats):
         c.execute(sql, values)
     con.commit()
     con.close()
+
+
+def export_to_csv(db_path, base_path):
+    """
+    Writes set and rep history to a single Excel file with multiple sheets.
+
+    Parameters
+    ----------
+    db_path : string
+        Path to the database's location on disk.
+    base_path : string
+        Base name for the CSV files on disk.
+    """
+    con = connect_db(db_path)
+    sets = pd.read_sql('SELECT * FROM set_history', con, index_col='set_id')
+    reps = pd.read_sql('SELECT * FROM rep_history', con, index_col='rep_id')
+    sets.to_csv(base_path.replace('.csv', '_sets.csv'))
+    reps.to_csv(base_path.replace('.csv', '_reps.csv'))
