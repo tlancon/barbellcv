@@ -15,7 +15,7 @@ and a high contrast marker on your barbell.
    ```
 4. Run the program:
     ```
-    python main.py
+    python main.pyw
     ```
 5. Preview your webcam using the "Preview" button, and rotate it if needed using the adjacent dropdown.
 Press Enter to escape the preview.
